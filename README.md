@@ -115,6 +115,10 @@ Attributes
   - Github gitlab address
   - Default git://github.com/gitlabhq/gitlabhq.git
 
+* gitlab['gitlab\_branch']
+  - Gitlab git branch
+  - Default master
+
 * gitlab['packages']
   - Platform specific OS packages
 

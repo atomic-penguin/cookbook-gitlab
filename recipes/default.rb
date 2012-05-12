@@ -153,7 +153,7 @@ end
 # Clone Gitlab repo from github
 git node['gitlab']['app_home'] do
   repository node['gitlab']['gitlab_url']
-  reference "master"
+  reference node['gitlab']['gitlab_branch']
   action :checkout
   user node['gitlab']['user']
   group node['gitlab']['group']
