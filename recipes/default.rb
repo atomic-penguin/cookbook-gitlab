@@ -72,7 +72,7 @@ user node['gitlab']['user'] do
 end
 
 # Fix home permissions for nginx
-directory node['gitlab']['home']
+directory node['gitlab']['home'] do
   owner node['gitlab']['user']
   group node['gitlab']['group']
   mode 0755
