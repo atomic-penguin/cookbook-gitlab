@@ -13,9 +13,15 @@ upstream unicorn_rails {
 }
 
 server {
-    listen       80;
+    listen       <%= node['gitlab']['https'] ? 443 : 80 %>;
     client_max_body_size 4G;
     server_name  _;
+    <% if node['gitlab']['https'] %>
+    ssl on;
+    ssl_certificate <%= node['gitlab']['ssl_certificate'] %>;
+    ssl_certificate_key <%= node['gitlab']['ssl_certificate_key'] %>;
+    <% end %>
+
 
     access_log  /var/log/nginx/<%= node['hostname'] %>.access.log  combined;
 
@@ -33,6 +39,7 @@ server {
 
     location / {
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto <%= node['gitlab']['https'] ? "https" : "http" %>;
       proxy_set_header Host $http_host;
       proxy_redirect off;
 

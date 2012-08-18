@@ -20,9 +20,14 @@
 
 # Include cookbook dependencies
 %w{ ruby_build gitlab::gitolite build-essential
-    readline sudo openssh xml zlib python::pip
+    readline sudo openssh xml zlib python::package python::pip
     redisio::install redisio::enable sqlite }.each do |requirement|
   include_recipe requirement
+end
+
+# symlink redis-cli into /usr/bin (needed for gitlab hooks to work)
+link "/usr/bin/redis-cli" do
+  to "/usr/local/bin/redis-cli"
 end
 
 # There are problems deploying on Redhat provided rubies.
@@ -158,6 +163,13 @@ git node['gitlab']['app_home'] do
   group node['gitlab']['group']
 end
 
+directory "#{node['gitlab']['app_home']}/tmp" do
+  user node['gitlab']['user']
+  group node['gitlab']['group']
+  mode "0755"
+  action :create
+end
+
 # Render gitlab config file
 template "#{node['gitlab']['app_home']}/config/gitlab.yml" do
   owner node['gitlab']['user']
@@ -212,6 +224,21 @@ end
   service svc do
     action [ :start, :enable ]
   end
+end
+
+bash "Create SSL key" do
+  not_if { ! node['gitlab']['https'] || File.exists?(node['gitlab']['ssl_certificate_key']) }
+  cwd "/etc/nginx"
+  code <<-EOF
+umask 077
+openssl genrsa 2048 > #{node['gitlab']['ssl_certificate_key']}
+EOF
+end
+
+bash "Create SSL certificate" do
+  not_if { ! node['gitlab']['https'] || File.exists?(node['gitlab']['ssl_certificate']) }
+  cwd "/etc/nginx"
+  code "openssl req -subj \"#{node['gitlab']['ssl_req']}\" -new -x509 -nodes -sha1 -days 3650 -key #{node['gitlab']['ssl_certificate_key']} > #{node['gitlab']['ssl_certificate']}"
 end
 
 # Render nginx default vhost config

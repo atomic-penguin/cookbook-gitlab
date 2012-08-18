@@ -70,3 +70,8 @@ when "redhat","centos","scientific","amazon"
 else
   default['gitlab']['install_ruby'] = "package"
 end
+
+default['gitlab']['https'] = false
+default['gitlab']['ssl_certificate'] = "/etc/nginx/#{node['fqdn']}.crt"
+default['gitlab']['ssl_certificate_key'] = "/etc/nginx/#{node['fqdn']}.key"
+default['gitlab']['ssl_req'] = "/C=US/ST=Several/L=Locality/O=Example/OU=Operations/CN=#{node['fqdn']}/emailAddress=root@localhost"

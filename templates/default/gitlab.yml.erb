@@ -3,6 +3,12 @@
 
 # Gitlab application config file
 
+# Web application specific settings
+web:
+  host: <%= node['fqdn'] %>
+  port: <%= node['gitlab']['https'] ? 443 : 80 %>
+  https: <%= node['gitlab']['https'] %>
+
 # Email used for notification
 # about new issues, comments
 email:
@@ -11,7 +17,14 @@ email:
 
   # Protocol used for links in email letters
   # Value can be http or https
-  protocol: http # or https
+  protocol: <%= node['gitlab']['https'] ? "https" : "http" %>
+
+# Application specific settings
+# Like default project limit for user etc
+app:
+  default_projects_limit: 10
+  # backup_path: "/vol/backups"   # default: Rails.root + backups/
+  # backup_keep_time: 604800      # default: 0 (forever) (in seconds)
 
 # Git Hosting congiguration
 git_host:

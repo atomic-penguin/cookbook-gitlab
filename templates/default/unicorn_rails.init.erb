@@ -19,71 +19,49 @@
 # Description:       unicorn_rails init script as shipped with gitlab cookbook
 ### END INIT INFO
 
-# Source function library if it exists
-if [ ! -f /etc/init.d/functions ]; then
-    exit 0
-fi
-
-. /etc/init.d/functions
-
 DAEMON_OPTS="-c <%= node['gitlab']['app_home'] %>/config/unicorn.rb -E production -D"
 NAME=unicorn_rails
 DESC=gitlab
 PID=<%= node['gitlab']['app_home'] %>/tmp/pids/unicorn.pid
 RESQUE_PID=<%= node['gitlab']['app_home'] %>/tmp/pids/resque_worker.pid
 
-start() {
-  . /etc/profile.d/gitlab.sh || exit 1
-  CD_TO_APP_DIR="cd <%= node['gitlab']['app_home'] %>"
-  START_DAEMON_PROCESS="bundle exec unicorn_rails $DAEMON_OPTS"
-  START_RESQUE_PROCESS="./resque.sh"
-  echo -n "Starting $NAME: "
-  if [ `whoami` = root ]; then
-    daemon `sudo -u gitlab sh -c "$CD_TO_APP_DIR > /dev/null 2>&1 && $START_DAEMON_PROCESS && $START_RESQUE_PROCESS"`
-  else
-    daemon `$CD_TO_APP_DIR > /dev/null 2>&1 && $START_DAEMON_PROCESS && $START_RESQUE_PROCESS`
-  fi
-  echo
-}
-
-stop() {
-  echo -n "Stopping $NAME: "
-  killproc -p $PID unicorn_rails -QUIT
-  killproc -p $RESQUE_PID resque -QUIT
-  echo
-}
-
-restart() {
-  echo -n "Restarting $NAME: "
-  killproc -p $PID unicorn_rails -USR2
-  killproc -p $RESQUE_PID resque -USR2
-  echo
-}
-
-reload() {
-  echo -n "Reloading $NAME configuration: "
-  killproc -p $PID unicorn_rails -HUP
-  killproc -p $RESQUE_PID resque -HUP
-  echo
-}
-
 case "$1" in
   start)
-    start
-  ;;
+        . /etc/profile.d/gitlab.sh || exit 1
+        CD_TO_APP_DIR="cd <%= node['gitlab']['app_home'] %>"
+        START_DAEMON_PROCESS="bundle exec unicorn_rails $DAEMON_OPTS"
+        START_RESQUE_PROCESS="./resque.sh"
+
+        echo -n "Starting $DESC: "
+        if [ `whoami` = root ]; then
+          sudo -u gitlab sh -l -c "$CD_TO_APP_DIR > /dev/null 2>&1 && $START_DAEMON_PROCESS && $START_RESQUE_PROCESS"
+        else
+          $CD_TO_APP_DIR > /dev/null 2>&1 && $START_DAEMON_PROCESS && $START_RESQUE_PROCESS
+        fi
+        echo "$NAME."
+        ;;
   stop)
-    stop
-  ;;
+        echo -n "Stopping $DESC: "
+        kill -QUIT `cat $PID`
+        kill -QUIT `cat $RESQUE_PID`
+        echo "$NAME."
+        ;;
   restart)
-    stop
-  ;;
+        echo -n "Restarting $DESC: "
+        kill -USR2 `cat $PID`
+        kill -USR2 `cat $RESQUE_PID`
+        echo "$NAME."
+        ;;
   reload)
-    reload
-  ;;
+        echo -n "Reloading $DESC configuration: "
+        kill -HUP `cat $PID`
+        kill -HUP `cat $RESQUE_PID`
+        echo "$NAME."
+        ;;
   *)
-    echo "Usage: $NAME {start|stop|restart|reload}" >&2
-    exit 1
-  ;;
+        echo "Usage: $NAME {start|stop|restart|reload}" >&2
+        exit 1
+        ;;
 esac
 
 exit 0

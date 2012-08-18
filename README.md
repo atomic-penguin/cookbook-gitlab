@@ -133,6 +133,18 @@ Attributes
     or Rubies are built
   - Redhat family defaults 1.9.2; Debian family defaults to package.
 
+* gitlab['https']
+  - Whether https should be used
+  - Default false
+
+* gitlab['ssl\_certificate'] & gitlab['ssl\_certificate\_key']
+  - Location of certificate file and key if https is true.
+    A self-signed certificate is generated if certificate is not present.
+  - Default /etc/nginx/#{node['fqdn']}.crt and /etc/nginx/#{node['fqdn']}.key
+
+* gitlab['ssl\_req']
+  - Request subject used to generate a self-signed SSL certificate
+
 Usage
 =====
 
