@@ -38,7 +38,7 @@ end
 # There are problems deploying on Redhat provided rubies.
 # We'll use Fletcher Nichol's slick ruby_build cookbook to compile a Ruby.
 if node['gitlab']['install_ruby'] !~ /package/
-  ruby_build_ruby node['gitlab']['install_ruby'] 
+  ruby_build_ruby node['gitlab']['install_ruby']
 
   # Drop off a profile script.
   template "/etc/profile.d/gitlab.sh" do
@@ -214,7 +214,7 @@ end
 
 # Install Gems with bundle install
 execute "gitlab-bundle-install" do
-  command "bundle install --without development test --deployment"
+  command "bundle install --without development test postgres --deployment"
   cwd node['gitlab']['app_home']
   user node['gitlab']['user']
   group node['gitlab']['group']
@@ -226,7 +226,7 @@ end
 execute "gitlab-bundle-rake" do
   command "bundle exec rake gitlab:app:setup RAILS_ENV=production"
   cwd node['gitlab']['app_home']
-  user node['gitlab']['user'] 
+  user node['gitlab']['user']
   group node['gitlab']['group']
   not_if { File.exists?("#{node['gitlab']['app_home']}/db/production.sqlite3") }
 end
