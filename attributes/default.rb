@@ -47,7 +47,7 @@ when "redhat","centos","amazon","scientific"
   when 6
     default['gitlab']['packages'] = %w{
       curl wget libxslt-devel sqlite-devel openssl-devel
-      mysql++-devel libicu-devel glibc-devel
+      mysql++-devel libicu-devel glibc-devel postgresql-devel
       libyaml-devel nginx python python-devel
     }
   end
