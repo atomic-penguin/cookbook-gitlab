@@ -214,7 +214,7 @@ end
 
 # Install Gems with bundle install
 execute "gitlab-bundle-install" do
-  command "bundle install --without development test --deployment"
+  command "bundle install --without development test postgres --deployment"
   cwd node['gitlab']['app_home']
   user node['gitlab']['user']
   group node['gitlab']['group']
