@@ -25,6 +25,24 @@ app:
   default_projects_limit: 10
   # backup_path: "/vol/backups"   # default: Rails.root + backups/
   # backup_keep_time: 604800      # default: 0 (forever) (in seconds)
+<% if @ldap["enable"] -%>
+
+# Auth settings
+ldap:
+  enabled: true
+  host: '<%= @ldap["host"] %>'
+  base: '<%= @ldap["base"] %>'
+  port: <%= @ldap["port"] %>
+  uid: '<%= @ldap["uid"] %>'
+  method: '<%= @ldap["method"] %>' # plain
+<%   if @ldap["bind_dn"] and @ldap["password"] -%>
+  bind_dn: '<%= @ldap["bind_dn"] %>'
+  password: '<%= @ldap["password"] %>'
+<%   end -%>
+
+omniauth:
+  enabled: true
+<% end -%>
 
 # Git Hosting congiguration
 git_host:

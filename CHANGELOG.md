@@ -1,3 +1,15 @@
+## v0.3.5
+
+Fix issues with stable snapshot v3.x
+
+* Add LDAP auth options
+
+Issues #16 and #17
+
+Issue 16: The section that runs the bundle command does not work correctly on Debian and Ubuntu distros. I modified the cookbook in order to install the Ruby 1.9.2 packages and add new flavours for the Ruby commands with the  update-alternatives command.
+
+Issue 17: The public key is saved in the node only if the private key is created. 
+
 ## v0.3.4
 
 Fix issues with stable snapshot v3.x

@@ -19,9 +19,9 @@
 #
 
 # Include cookbook dependencies
-%w{ ruby_build gitlab::gitolite build-essential
-    readline sudo openssh xml zlib python::package python::pip
-    redisio::install redisio::enable }.each do |requirement|
+%w{ gitlab::gitolite build-essential
+    readline sudo openssh xml zlib 
+    python::package python::pip }.each do |requirement|
   include_recipe requirement
 end
 
@@ -30,46 +30,100 @@ when "rhel"
   include_recipe "yumrepo::epel"
 end
 
-# symlink redis-cli into /usr/bin (needed for gitlab hooks to work)
-link "/usr/bin/redis-cli" do
-  to "/usr/local/bin/redis-cli"
-end
-
-# There are problems deploying on Redhat provided rubies.
-# We'll use Fletcher Nichol's slick ruby_build cookbook to compile a Ruby.
-if node['gitlab']['install_ruby'] !~ /package/
-  ruby_build_ruby node['gitlab']['install_ruby']
-
-  # Drop off a profile script.
-  template "/etc/profile.d/gitlab.sh" do
-    owner "root"
-    group "root"
-    mode 0755
-    variables(
-      :fqdn => node['fqdn'],
-      :install_ruby => node['gitlab']['install_ruby']
-    )
-  end
-
-  # Set PATH for remainder of recipe.
-  ENV['PATH'] = "/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin:/usr/local/ruby/#{node['gitlab']['install_ruby']}/bin"
-end
-
 # Install required packages for Gitlab
 node['gitlab']['packages'].each do |pkg|
   package pkg
 end
 
+case node['platform_family']
+when "ubuntu","debian"
+
+  # We'll we update the alternatives in orer to use Ruby 1.9.2 instead Ruby 1.8
+  bash "Update and set gem alternatives" do
+    only_if "test $(update-alternatives --query gem | grep Value | awk '{print $2}') = '/usr/bin/gem1.8'"
+    code <<-EOF
+rm /usr/bin/ruby
+
+update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby1.8 180 \
+         --slave   /usr/share/man/man1/ruby.1.gz ruby.1.gz \
+                        /usr/share/man/man1/ruby1.8.1.gz \
+        --slave   /usr/bin/ri ri /usr/bin/ri1.8 \
+        --slave   /usr/bin/irb irb /usr/bin/irb1.8 \
+        --slave   /usr/bin/rdoc rdoc /usr/bin/rdoc1.8
+
+update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby1.9.1 400 \
+         --slave   /usr/share/man/man1/ruby.1.gz ruby.1.gz \
+                        /usr/share/man/man1/ruby1.9.1.1.gz \
+        --slave   /usr/bin/ri ri /usr/bin/ri1.9.1 \
+        --slave   /usr/bin/irb irb /usr/bin/irb1.9.1 \
+        --slave   /usr/bin/rdoc rdoc /usr/bin/rdoc1.9.1
+
+update-alternatives --quiet --install /usr/bin/gem gem /usr/bin/gem1.9.1 400 \
+            --slave /usr/share/man/man1/gem.1.gz gem.1.gz \
+            /usr/share/man/man1/gem1.9.1.1.gz \
+            --slave /etc/bash_completion.d/gem bash_completion_gem \
+            /etc/bash_completion.d/gem1.9.1 
+update-alternatives --set ruby /usr/bin/ruby1.9.1
+update-alternatives --set gem /usr/bin/gem1.9.1
+exit 0
+EOF
+  end
+
+  # Install required Ruby Gems for Gitlab
+
+  gem_package("charlock_holmes") do
+    gem_binary("/usr/bin/gem1.9.1")
+    options("--version '0.6.8'")
+  end
+
+  gem_package("bundler") do
+    gem_binary("/usr/bin/gem1.9.1")
+    options("--bindir /usr/local/bin")
+  end
+
+else
+
+  # Include cookbook dependencies
+  %w{ ruby_build redisio::install redisio::enable }.each do |requirement|
+    include_recipe requirement
+  end
+
+  # symlink redis-cli into /usr/bin (needed for gitlab hooks to work)
+  link "/usr/bin/redis-cli" do
+    to "/usr/local/bin/redis-cli"
+  end
+
+  # There are problems deploying on Redhat provided rubies.
+  # We'll use Fletcher Nichol's slick ruby_build cookbook to compile a Ruby.
+  if node['gitlab']['install_ruby'] !~ /package/
+    ruby_build_ruby node['gitlab']['install_ruby']
+
+    # Drop off a profile script.
+    template "/etc/profile.d/gitlab.sh" do
+      owner "root"
+      group "root"
+      mode 0755
+      variables(
+        :fqdn => node['fqdn'],
+        :install_ruby => node['gitlab']['install_ruby']
+      )
+    end
+
+    # Set PATH for remainder of recipe.
+    ENV['PATH'] = "/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin:/usr/local/ruby/#{node['gitlab']['install_ruby']}/bin"
+  end
+
+  # Install required Ruby Gems for Gitlab
+  %w{ charlock_holmes bundler }.each do |gempkg|
+    gem_package gempkg do
+      action :install
+    end
+  end
+end
+
 # Install sshkey gem into chef
 chef_gem "sshkey" do
   action :install
-end
-
-# Install required Ruby Gems for Gitlab
-%w{ charlock_holmes bundler }.each do |gempkg|
-  gem_package gempkg do
-    action :install
-  end
 end
 
 # Install pygments from pip
@@ -105,29 +159,22 @@ directory "#{node['gitlab']['home']}/.ssh" do
 end
 
 # Generate and deploy ssh public/private keys
-Gem.clear_paths
-require 'sshkey'
-gitlab_sshkey = SSHKey.generate(:type => 'RSA', :comment => "#{node['gitlab']['user']}@#{node['fqdn']}")
-node.set_unless['gitlab']['public_key'] = gitlab_sshkey.ssh_public_key
+unless File.exists?("#{node['gitlab']['home']}/.ssh/id_rsa")
+  Gem.clear_paths
+  require 'sshkey'
+  gitlab_sshkey = SSHKey.generate(:type => 'RSA', :comment => "#{node['gitlab']['user']}@#{node['fqdn']}")
+  node.set['gitlab']['public_key'] = gitlab_sshkey.ssh_public_key
+  node.save unless Chef::Config[:solo]
 
-# Save public_key to node, unless it is already set.
-ruby_block "save node data" do
-  block do
-    node.save
+  # Render private key template
+  template "#{node['gitlab']['home']}/.ssh/id_rsa" do
+    owner node['gitlab']['user']
+    group node['gitlab']['group']
+    variables(
+      :private_key => gitlab_sshkey.private_key
+    )
+    mode 0600
   end
-  not_if { Chef::Config[:solo] }
-  action :create
-end
-
-# Render private key template
-template "#{node['gitlab']['home']}/.ssh/id_rsa" do
-  owner node['gitlab']['user']
-  group node['gitlab']['group']
-  variables(
-    :private_key => gitlab_sshkey.private_key
-  )
-  mode 0600
-  not_if { File.exists?("#{node['gitlab']['home']}/.ssh/id_rsa") }
 end
 
 # Render public key template for gitlab user
@@ -200,7 +247,8 @@ template "#{node['gitlab']['app_home']}/config/gitlab.yml" do
     :fqdn => node['fqdn'],
     :https_boolean => node['gitlab']['https'],
     :git_user => node['gitlab']['git_user'],
-    :git_home => node['gitlab']['git_home']
+    :git_home => node['gitlab']['git_home'],
+    :ldap => node['gitlab']['auth']['ldap']
   )
 end
 

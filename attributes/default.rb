@@ -35,6 +35,7 @@ when "ubuntu","debian"
     curl wget checkinstall libxslt-dev libsqlite3-dev
     libcurl4-openssl-dev libssl-dev libmysql++-dev
     libicu-dev libc6-dev libyaml-dev nginx python python-dev
+    redis-server
   }
 when "redhat","centos","amazon","scientific"
   case node['platform_version'].to_i
@@ -75,3 +76,15 @@ default['gitlab']['https'] = false
 default['gitlab']['ssl_certificate'] = "/etc/nginx/#{node['fqdn']}.crt"
 default['gitlab']['ssl_certificate_key'] = "/etc/nginx/#{node['fqdn']}.key"
 default['gitlab']['ssl_req'] = "/C=US/ST=Several/L=Locality/O=Example/OU=Operations/CN=#{node['fqdn']}/emailAddress=root@localhost"
+
+# LDAP auth
+default['gitlab']['auth']['ldap']['enable'] = false
+default['gitlab']['auth']['ldap']['host'] = "127.0.0.1"
+default['gitlab']['auth']['ldap']['base'] = "dc=example,dc=com"
+default['gitlab']['auth']['ldap']['uid'] = "uid"
+default['gitlab']['auth']['ldap']['port'] = 389
+default['gitlab']['auth']['ldap']['method'] = ":plain"
+default['gitlab']['auth']['ldap']['bind_dn'] = "cn=admin,dc=example,dc=com"
+#default['gitlab']['auth']['ldap']['bind_dn'] = false
+default['gitlab']['auth']['ldap']['password'] = "PASSWORD"
+#default['gitlab']['auth']['ldap']['password'] = false
