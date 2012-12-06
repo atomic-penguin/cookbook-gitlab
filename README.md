@@ -144,6 +144,40 @@ Attributes
 * gitlab['ssl\_req']
   - Request subject used to generate a self-signed SSL certificate
 
+
+### Database Attributes
+Note, most of the database attributes have sane defaults. You will only need to change these configuration options if you're using a non-standard installation. Please see `attributes/default.rb` for more information on how a dynamic attribute is calculated.
+
+* gitlab['database']['type']
+  - The database (datastore) to use.
+  - Options: "mysql", "postgres"
+  - Default "mysql"
+
+* gitlab['database']['adapter']
+  - The Rails adapter to use with the database type
+  - Options: "mysql2", "postgresql"
+  - Default (varies based on `type`)
+
+* gitlab['database']['encoding']
+  - The database encoding
+  - Default (varies based on `type`)
+
+* gitlab['database']['host']
+  - The host (fqdn) where the database exists
+  - Default `localhost`
+
+* gitlab['database']['pool']
+  - The maximum number of connections to allow
+  - Default 5
+
+* gitlab['database']['database']
+  - The name of the database
+  - Default `gitlab`
+
+* gitlab['database']['username']
+  - The username for the database
+  - Default `gitlab`
+
 Usage
 =====
 
@@ -164,7 +198,7 @@ License and Author
 Author: Gerald L. Hevener Jr., M.S.
 Copyright: 2012
 
-Author: Eric G. Wolfe 
+Author: Eric G. Wolfe
 Copyright: 2012
 
 Gitlolite Author: David Ruan

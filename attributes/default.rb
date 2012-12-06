@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: gitlab
-# Attributes:: default 
+# Attributes:: default
 #
 # Copyright 2012, Gerald L. Hevener Jr., M.S.
 # Copyright 2012, Eric G. Wolfe
@@ -26,6 +26,15 @@ default['gitlab']['app_home'] = "#{node['gitlab']['home']}/gitlab"
 # Set github URL for gitlab
 default['gitlab']['gitlab_url'] = "git://github.com/gitlabhq/gitlabhq.git"
 default['gitlab']['gitlab_branch'] = "stable"
+
+# Database setup
+default['gitlab']['database']['type'] = "mysql"
+default['gitlab']['database']['adapter'] = default['gitlab']['database']['type'] == "mysql" ? "mysql2" : "postgresql"
+default['gitlab']['database']['encoding'] = default['gitlab']['database']['type'] == "mysql" ? "utf8" : "unicode"
+default['gitlab']['database']['host'] = "localhost"
+default['gitlab']['database']['pool'] = 5
+default['gitlab']['database']['database'] = "gitlab"
+default['gitlab']['database']['username'] = "gitlab"
 
 # Required packages for Gitlab
 case node['platform']
@@ -63,7 +72,7 @@ end
 
 default['gitlab']['trust_local_sshkeys'] = "yes"
 
-# Problems deploying this on RedHat provided rubies. 
+# Problems deploying this on RedHat provided rubies.
 case node['platform']
 when "redhat","centos","scientific","amazon"
   default['gitlab']['install_ruby'] = "1.9.2-p290"
