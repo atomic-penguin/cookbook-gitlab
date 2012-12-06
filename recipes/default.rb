@@ -204,17 +204,37 @@ template "#{node['gitlab']['app_home']}/config/gitlab.yml" do
   )
 end
 
-# Link sqlite example config file to database.yml
-link "#{node['gitlab']['app_home']}/config/database.yml" do
-  to "#{node['gitlab']['app_home']}/config/database.yml.sqlite"
-  owner node['gitlab']['user']
-  group node['gitlab']['group']
-  link_type :hard
+# Setup the database
+case node['gitlab']['database']['type']
+when 'mysql'
+  include_recipe 'gitlab::mysql'
+when 'postgres'
+  include_recipe 'gitlab::postgres'
+else
+  Chef::Log.error "#{node['gitlab']['database']['type']} is not a valid type. Please use 'mysql' or 'postgres'!"
 end
 
+# Write the database.yml
+template "#{node['gitlab']['app_home']}/config/database.yml" do
+  source 'database.yml.erb'
+  owner node['gitlab']['user']
+  group node['gitlab']['group']
+  mode '0644'
+  variables(
+    :adapter  => node['gitlab']['database']['adapter'],
+    :encoding => node['gitlab']['database']['encoding'],
+    :host     => node['gitlab']['database']['host'],
+    :database => node['gitlab']['database']['database'],
+    :pool     => node['gitlab']['database']['pool'],
+    :username => node['gitlab']['database']['username'],
+    :password => node['gitlab']['database']['password']
+  )
+end
+
+without_group = node['gitlab']['database'] == 'mysql' ? 'postgres' : 'mysql'
 # Install Gems with bundle install
 execute "gitlab-bundle-install" do
-  command "bundle install --without development test postgres --deployment"
+  command "bundle install --without development test #{without_group} --deployment"
   cwd node['gitlab']['app_home']
   user node['gitlab']['user']
   group node['gitlab']['group']
@@ -224,11 +244,11 @@ end
 
 # Setup sqlite database for Gitlab
 execute "gitlab-bundle-rake" do
-  command "bundle exec rake gitlab:app:setup RAILS_ENV=production"
+  command "bundle exec rake gitlab:app:setup RAILS_ENV=production && touch .gitlab-setup"
   cwd node['gitlab']['app_home']
   user node['gitlab']['user']
   group node['gitlab']['group']
-  not_if { File.exists?("#{node['gitlab']['app_home']}/db/production.sqlite3") }
+  not_if { File.exists?("#{node['gitlab']['app_home']}/.gitlab-setup") }
 end
 
 # Render unicorn template

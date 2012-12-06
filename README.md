@@ -144,6 +144,11 @@ Attributes
 * gitlab['ssl\_req']
   - Request subject used to generate a self-signed SSL certificate
 
+* gitlab['databsae']
+  - The database (datastore) to use.
+  - Options: "mysql", "postgres"
+  - Default "mysql"
+
 Usage
 =====
 
@@ -164,7 +169,7 @@ License and Author
 Author: Gerald L. Hevener Jr., M.S.
 Copyright: 2012
 
-Author: Eric G. Wolfe 
+Author: Eric G. Wolfe
 Copyright: 2012
 
 Gitlolite Author: David Ruan
