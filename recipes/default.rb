@@ -19,6 +19,11 @@
 #
 
 # Include cookbook dependencies
+case node['platform_family']
+when "debian"
+  include_recipe "apt"
+end
+
 %w{ ruby_build gitlab::gitolite build-essential
     readline sudo openssh xml zlib python::package python::pip
     redisio::install redisio::enable }.each do |requirement|
