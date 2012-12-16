@@ -97,6 +97,11 @@ group node['gitlab']['git_group'] do
   members node['gitlab']['user']
 end
 
+# Add the git user to the "gitlab" group
+group node['gitlab']['group'] do
+  members node['gitlab']['git_user']
+end
+
 # Create a $HOME/.ssh folder
 directory "#{node['gitlab']['home']}/.ssh" do
   owner node['gitlab']['user']
