@@ -75,3 +75,6 @@ default['gitlab']['https'] = false
 default['gitlab']['ssl_certificate'] = "/etc/nginx/#{node['fqdn']}.crt"
 default['gitlab']['ssl_certificate_key'] = "/etc/nginx/#{node['fqdn']}.key"
 default['gitlab']['ssl_req'] = "/C=US/ST=Several/L=Locality/O=Example/OU=Operations/CN=#{node['fqdn']}/emailAddress=root@localhost"
+
+default['gitlab']['backup_path'] = node['gitlab']['app_home'] + "/backups"
+default['gitlab']['backup_keep_time'] = 604800
