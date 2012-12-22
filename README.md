@@ -20,9 +20,6 @@ Requirements
 * Ruby 1.9.1 packages
   - Packages used for Debian / Ubuntu only
 
-* Nginx package
-  - All platforms need an nginx package to configure Nginx and Unicorn.
-
 Cookbooks + Acknowledgements
 ----------------------------
 
@@ -57,6 +54,7 @@ Much kudos to everyone who added indirectly to the epicness of this cookbook.
   - [build-essential](http://ckbk.it/build-essential)
   - [python::pip](http://ckbk.it/python)
   - [sudo](http://ckbk.it/sudo)
+  - [nginx](http://ckbk.it/nginx)
   - [openssh](http://ckbk.it/openssh)
   - [perl](http://ckbk.it/perl)
   - [xml](http://ckbk.it/xml)
@@ -72,10 +70,6 @@ Notes about conflicts
     original cookbook.  Our gitolite recipe will only configure gitolite for use with gitlab.
     Our gitlab::gitolite recipe will not set up a standalone gitolite installation as David's
     cookbook does.
-
-* [nginx](http://ckbk.it/nginx) cookbook
-  - Our default recipe templates out the /etc/nginx/conf.d/default.conf.  This will directly
-    conflict with another cookbook, such as nginx, trying to manage this file.
 
 Attributes
 ==========
@@ -143,6 +137,14 @@ Attributes
 
 * gitlab['ssl\_req']
   - Request subject used to generate a self-signed SSL certificate
+
+* gitlab['listen\_ip']
+  - IP address that nginx will listen on
+  - Default * (listen on all IPs)
+
+* gitlab['listen\_port']
+  - Port that nginx will listen on
+  - Defaults to 80 if gitlab['https'] is set to false, 443 if it's set to true
 
 Usage
 =====

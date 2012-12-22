@@ -6,7 +6,7 @@
 # Web application specific settings
 web:
   host: <%= @fqdn %>
-  port: <%= @https_boolean ? 443 : 80 %>
+  port: <%= @port %>
   https: <%= @https_boolean %>
 
 # Email used for notification

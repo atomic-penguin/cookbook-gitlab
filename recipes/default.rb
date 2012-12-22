@@ -18,9 +18,14 @@
 # limitations under the License.
 #
 
+# Deactivate the nginx default site
+node.default['nginx']['default_site_enabled'] = false
+# Either listen_port has been configured elsewhere or we calculate it depending on the https flag
+node.default['gitlab']['listen_port'] = node['gitlab']['listen_port'] || node['gitlab']['https'] ? 443 : 80
+
 # Include cookbook dependencies
 %w{ ruby_build gitlab::gitolite build-essential
-    readline sudo openssh xml zlib python::package python::pip
+    readline sudo nginx openssh xml zlib python::package python::pip
     redisio::install redisio::enable }.each do |requirement|
   include_recipe requirement
 end
@@ -198,6 +203,7 @@ template "#{node['gitlab']['app_home']}/config/gitlab.yml" do
   mode 0644
   variables(
     :fqdn => node['fqdn'],
+    :port => node['gitlab']['listen_port'],
     :https_boolean => node['gitlab']['https'],
     :git_user => node['gitlab']['git_user'],
     :git_home => node['gitlab']['git_home']
@@ -276,18 +282,31 @@ bash "Create SSL certificate" do
   code "openssl req -subj \"#{node['gitlab']['ssl_req']}\" -new -x509 -nodes -sha1 -days 3650 -key #{node['gitlab']['ssl_certificate_key']} > #{node['gitlab']['ssl_certificate']}"
 end
 
+# Overwrite the default.conf of nginx on rhel as it will automatically host an
+# EPEL nginx test site on port 80 (not to be confused with nginxs default site)
+case node['platform_family']
+when "rhel"
+  cookbook_file "/etc/nginx/conf.d/default.conf" do
+    source "rhel.nginx.default.conf"
+    mode 00644
+  end
+end
+
 # Render nginx default vhost config
-template "/etc/nginx/conf.d/default.conf" do
+template "/etc/nginx/sites-available/gitlab.conf" do
   owner "root"
   group "root"
   mode 0644
-  source "nginx.default.conf.erb"
+  source "nginx.gitlab.conf.erb"
   notifies :restart, "service[nginx]"
   variables(
     :hostname => node['hostname'],
     :gitlab_app_home => node['gitlab']['app_home'],
     :https_boolean => node['gitlab']['https'],
     :ssl_certificate => node['gitlab']['ssl_certificate'],
-    :ssl_certificate_key => node['gitlab']['ssl_certificate_key']
+    :ssl_certificate_key => node['gitlab']['ssl_certificate_key'],
+    :listen => node['gitlab']['listen_ip'] + ":" + node['gitlab']['listen_port']
   )
 end
+
+nginx_site 'gitlab.conf'
