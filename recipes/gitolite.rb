@@ -54,7 +54,7 @@ end
 # Clone gitolite repo from github
 git node['gitlab']['gitolite_home'] do
   repository node['gitlab']['gitolite_url']
-  reference "master"
+  reference node['gitlab']['gitolite_branch']
   user node['gitlab']['git_user']
   group node['gitlab']['git_group']
   action :checkout

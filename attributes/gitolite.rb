@@ -18,7 +18,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-default['gitlab']['gitolite_url'] = "git://github.com/sitaramc/gitolite.git"
+default['gitlab']['gitolite_url'] = "https://github.com/gitlabhq/gitolite.git"
+default['gitlab']['gitolite_branch'] = "gl-v304"
 default['gitlab']['git_user'] = "git"
 default['gitlab']['git_group'] = "git"
 
