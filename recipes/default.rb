@@ -67,8 +67,9 @@ end
 
 # Install required Ruby Gems for Gitlab
 %w{ charlock_holmes bundler }.each do |gempkg|
-  gem_package gempkg do
-    action :install
+  execute "gem install #{gempkg}" do
+    command "gem install #{gempkg}"
+    environment({ 'LANG' => "en_US.UTF-8", 'LC_ALL' => "en_US.UTF-8" })
   end
 end
 
