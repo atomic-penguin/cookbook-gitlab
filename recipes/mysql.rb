@@ -21,7 +21,13 @@ include_recipe 'mysql::ruby'
 # Enable secure password generation
 ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
 node.set_unless['gitlab']['database']['password'] = secure_password
-node.save
+ruby_block "save node data" do
+  block do
+    node.save
+  end
+  not_if { Chef::Config[:solo] }
+  action :create
+end
 
 # Helper variables
 database = node['gitlab']['database']['database']
