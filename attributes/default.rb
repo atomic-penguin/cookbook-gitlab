@@ -22,10 +22,12 @@ default['gitlab']['user'] = "gitlab"
 default['gitlab']['group'] = "gitlab"
 default['gitlab']['home'] = "/var/gitlab"
 default['gitlab']['app_home'] = "#{node['gitlab']['home']}/gitlab"
+default['gitlab']['web_fqdn'] = nil
+default['gitlab']['gitolite_host'] = nil
 
 # Set github URL for gitlab
 default['gitlab']['gitlab_url'] = "git://github.com/gitlabhq/gitlabhq.git"
-default['gitlab']['gitlab_branch'] = "stable"
+default['gitlab']['gitlab_branch'] = "4-2-stable"
 
 # Database setup
 default['gitlab']['database']['type'] = "mysql"

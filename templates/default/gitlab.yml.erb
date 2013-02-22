@@ -3,40 +3,86 @@
 
 # Gitlab application config file
 
-# Web application specific settings
-web:
+## GitLab settings
+gitlab:
+  ## Web server settings
   host: <%= @fqdn %>
   port: <%= @https_boolean ? 443 : 80 %>
   https: <%= @https_boolean %>
+  # Uncomment and customize to run in non-root path
+  # Note that ENV['RAILS_RELATIVE_URL_ROOT'] in config/unicorn.rb may need to be changed
+  # relative_url_root: /gitlab
 
-# Email used for notification
-# about new issues, comments
-email:
-  from: gitlab@<%= @fqdn %> 
-  host: <%= @fqdn %> 
+  # Uncomment and customize if you can't use the default user to run GitLab (default: 'gitlab')
+  # user: user123
 
-  # Protocol used for links in email letters
-  # Value can be http or https
-  protocol: <%= @https_boolean ? "https" : "http" %>
+  ## Email settings
+  # Email address used in the "From" field in mails sent by GitLab
+  email_from: gitlab@<%= node['fqdn'] %> 
 
-# Application specific settings
-# Like default project limit for user etc
-app:
+  # Email address of your support contact (default: same as email_from)
+  support_email: support@<%= node['fqdn'] %>
+
+  ## Project settings
   default_projects_limit: 10
-  backup_path: "<%= @backup_path %>"
-  backup_keep_time: <%= @backup_keep_time %>
+  # signup_enabled: true          # default: false - Account passwords are not sent via the email if signup is enabled.
 
-# Git Hosting congiguration
-git_host:
-  system: gitolite
+## Backup settings
+backup:
+  path: "<%= @backup_path %>"   # Relative paths are relative to Rails.root (default: tmp/backups/)
+  keep_time: <%= @backup_keep_time %>   # default: 0 (forever) (in seconds)
+
+## Omniauth settings
+omniauth:
+  # Enable ability for users
+  # Allow logging in via Twitter, Google, etc. using Omniauth providers
+  enabled: false
+
+  # CAUTION!
+  # This allows users to login without having a user account first (default: false)
+  # User accounts will be created automatically when authentication was successful.
+  allow_single_sign_on: false
+  # Locks down those users until they have been cleared by the admin (default: true)
+  block_auto_created_users: true
+
+  ## Auth providers
+  # Uncomment the lines and fill in the data of the auth provider you want to use
+  # If your favorite auth provider is not listed you can user others:
+  # see https://github.com/gitlabhq/gitlabhq/wiki/Using-Custom-Omniauth-Providers
+  # The 'app_id' and 'app_secret' parameters are always passed as the first two
+  # arguments, followed by optional 'args' which can be either a hash or an array.
+  providers:
+    # - { name: 'google_oauth2', app_id: 'YOUR APP ID',
+    #     app_secret: 'YOUR APP SECRET',
+    #     args: { access_type: 'offline', approval_prompt: '' } }
+    # - { name: 'twitter', app_id: 'YOUR APP ID',
+    #     app_secret: 'YOUR APP SECRET'}
+    # - { name: 'github', app_id: 'YOUR APP ID',
+    #     app_secret: 'YOUR APP SECRET' }
+
+  
+## Gravatar
+gravatar:
+  enabled: true                 # Use user avatar images from Gravatar.com (default: true)
+  # plain_url: "http://..."     # default: http://www.gravatar.com/avatar/%{hash}?s=%{size}&d=mm
+  # ssl_url:   "https://..."    # default: https://secure.gravatar.com/avatar/%{hash}?s=%{size}&d=mm
+
+## Gitolite settings
+gitolite:
   admin_uri: <%= @git_user %>@localhost:gitolite-admin
-  base_path: <%= @git_home %>/repositories
-  host: <%= @fqdn %> 
-  git_user: <%= @git_user %>
-  # port: 22
-
+  # repos_path must not be a symlink
+  repos_path: <%= @git_home %>/repositories
+  hooks_path: <%= @git_home %>/.gitolite/hooks/
+  admin_key: gitlab
+  upload_pack: true
+  receive_pack: true
+  ssh_user: git
+  ssh_host: <%= @gitolite_host %>
+  # ssh_port: 22
+  # config_file: gitolite.conf
 # Git settings
 # Use default values unless you understand it
+
 git:
   # Max size of git object like commit, in bytes
   # This value can be increased if you have a very large commits

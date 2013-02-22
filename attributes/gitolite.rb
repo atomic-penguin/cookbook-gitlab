@@ -19,7 +19,7 @@
 # limitations under the License.
 
 default['gitlab']['gitolite_url'] = "https://github.com/gitlabhq/gitolite.git"
-default['gitlab']['gitolite_branch'] = "gl-v304"
+default['gitlab']['gitolite_branch'] = "gl-v320"
 default['gitlab']['git_user'] = "git"
 default['gitlab']['git_group'] = "git"
 

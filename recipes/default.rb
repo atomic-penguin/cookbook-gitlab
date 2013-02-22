@@ -66,7 +66,7 @@ chef_gem "sshkey" do
 end
 
 # Install required Ruby Gems for Gitlab
-%w{ charlock_holmes bundler }.each do |gempkg|
+%w{ charlock_holmes bundler rake}.each do |gempkg|
   gem_package gempkg do
     action :install
   end
@@ -107,7 +107,7 @@ end
 # Generate and deploy ssh public/private keys
 Gem.clear_paths
 require 'sshkey'
-gitlab_sshkey = SSHKey.generate(:type => 'RSA', :comment => "#{node['gitlab']['user']}@#{node['fqdn']}")
+gitlab_sshkey = SSHKey.generate(:type => 'RSA',:bits => 2048, :comment => "#{node['gitlab']['user']}@#{node['fqdn']}")
 node.set_unless['gitlab']['public_key'] = gitlab_sshkey.ssh_public_key
 
 # Save public_key to node, unless it is already set.
@@ -197,7 +197,8 @@ template "#{node['gitlab']['app_home']}/config/gitlab.yml" do
   group node['gitlab']['group']
   mode 0644
   variables(
-    :fqdn => node['fqdn'],
+    :fqdn => node['gitlab']['web_fqdn'] || node['fqdn'],
+    :gitolite_host => node['gitlab']['gitolite_host'] || "localhost",
     :https_boolean => node['gitlab']['https'],
     :git_user => node['gitlab']['git_user'],
     :git_home => node['gitlab']['git_home'],
@@ -255,7 +256,7 @@ end
 
 # Setup sqlite database for Gitlab
 execute "gitlab-bundle-rake" do
-  command "bundle exec rake gitlab:app:setup RAILS_ENV=production && touch .gitlab-setup"
+  command "bundle exec rake gitlab:setup RAILS_ENV=production && touch .gitlab-setup"
   cwd node['gitlab']['app_home']
   user node['gitlab']['user']
   group node['gitlab']['group']
@@ -273,12 +274,12 @@ template "#{node['gitlab']['app_home']}/config/unicorn.rb" do
   )
 end
 
-# Render unicorn_rails init script
-template "/etc/init.d/unicorn_rails" do
+# Render gitlab init script
+template "/etc/init.d/gitlab" do
   owner "root"
   group "root"
   mode 0755
-  source "unicorn_rails.init.erb"
+  source "gitlab.init.erb"
   variables(
     :fqdn => node['fqdn'],
     :gitlab_app_home => node['gitlab']['app_home']
@@ -286,7 +287,7 @@ template "/etc/init.d/unicorn_rails" do
 end
 
 # Start unicorn_rails and nginx service
-%w{ unicorn_rails nginx }.each do |svc|
+%w{ gitlab nginx }.each do |svc|
   service svc do
     action [ :start, :enable ]
   end
