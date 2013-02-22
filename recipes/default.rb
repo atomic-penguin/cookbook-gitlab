@@ -241,7 +241,7 @@ template "#{node['gitlab']['app_home']}/config/database.yml" do
   )
 end
 
-without_group = node['gitlab']['database'] == 'mysql' ? 'postgres' : 'mysql'
+without_group = node['gitlab']['database']['type'] == 'mysql' ? 'postgres' : 'mysql'
 
 # Install Gems with bundle install
 execute "gitlab-bundle-install" do
