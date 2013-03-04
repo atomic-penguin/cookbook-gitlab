@@ -19,7 +19,7 @@
 
 # Set attributes for the git user
 default['gitlab']['user'] = "gitlab"
-default['gitlab']['group'] = "gitlab"
+default['gitlab']['group'] = "git"
 default['gitlab']['home'] = "/var/gitlab"
 default['gitlab']['app_home'] = "#{node['gitlab']['home']}/gitlab"
 
@@ -38,30 +38,30 @@ default['gitlab']['database']['username'] = "gitlab"
 
 # Required packages for Gitlab
 case node['platform']
-when "ubuntu","debian"
-  default['gitlab']['packages'] = %w{
+  when "ubuntu","debian"
+    default['gitlab']['packages'] = %w{
     ruby1.9.1 ruby1.9.1-dev ri1.9.1 libruby1.9.1
     curl wget checkinstall libxslt-dev libsqlite3-dev
     libcurl4-openssl-dev libssl-dev libmysql++-dev
     libicu-dev libc6-dev libyaml-dev nginx python python-dev
   }
-when "redhat","centos","amazon","scientific"
-  case node['platform_version'].to_i
-  when 5
-    default['gitlab']['packages'] = %w{
+  when "redhat","centos","amazon","scientific"
+    case node['platform_version'].to_i
+      when 5
+        default['gitlab']['packages'] = %w{
       curl wget libxslt-devel sqlite-devel openssl-devel
       mysql++-devel libicu-devel glibc-devel libyaml-devel
       nginx python26 python26-devel
     }
-  when 6
-    default['gitlab']['packages'] = %w{
+      when 6
+        default['gitlab']['packages'] = %w{
       curl wget libxslt-devel sqlite-devel openssl-devel
       mysql++-devel libicu-devel glibc-devel
       libyaml-devel nginx python python-devel
     }
-  end
-else
-  default['gitlab']['packages'] = %w{
+    end
+  else
+    default['gitlab']['packages'] = %w{
     ruby1.9.1 ruby1.9.1-dev ri1.9.1 libruby1.9.1
     curl wget checkinstall libxslt-dev libsqlite3-dev
     libcurl4-openssl-dev libssl-dev libmysql++-dev
@@ -74,10 +74,10 @@ default['gitlab']['trust_local_sshkeys'] = "yes"
 
 # Problems deploying this on RedHat provided rubies.
 case node['platform']
-when "redhat","centos","scientific","amazon"
-  default['gitlab']['install_ruby'] = "1.9.2-p290"
-else
-  default['gitlab']['install_ruby'] = "package"
+  when "redhat","centos","scientific","amazon"
+    default['gitlab']['install_ruby'] = "1.9.2-p290"
+  else
+    default['gitlab']['install_ruby'] = "package"
 end
 
 default['gitlab']['https'] = false

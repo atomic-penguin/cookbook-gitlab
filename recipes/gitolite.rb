@@ -24,10 +24,24 @@ end
 # Add git user
 # Password isn't set correctly in original recipe, and really no reason to set one.
 user node['gitlab']['git_user'] do
-  comment "Git User" 
+  comment "Git User"
   home node['gitlab']['git_home']
-  shell "/bin/bash" 
+  shell "/bin/bash"
   supports :manage_home => true
+  password "f/Rm0IHVq6STI"
+end
+
+
+group "gitlab" do
+  action :modify
+  members "git"
+  append true
+end
+
+group "sudo" do
+  action :modify
+  members ["git", "gitlab"]
+  append true
 end
 
 directory node['gitlab']['git_home'] do
@@ -38,9 +52,9 @@ end
 
 %w{ bin repositories }.each do |subdir|
   directory "#{node['gitlab']['git_home']}/#{subdir}" do
-    owner node['gitlab']['git_user']
-    group node['gitlab']['git_group']
-    mode 0775
+    owner node['gitlab']['user']
+    group node['gitlab']['group']
+    mode 0777
   end
 end
 
@@ -75,6 +89,6 @@ template "#{node['gitlab']['git_home']}/.gitolite.rc" do
   group node['gitlab']['git_group']
   mode 0644
   variables(
-    :gitolite_umask => node['gitlab']['gitolite_umask']
-  ) 
+      :gitolite_umask => node['gitlab']['gitolite_umask']
+  )
 end
