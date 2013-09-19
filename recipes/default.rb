@@ -18,10 +18,14 @@
 # limitations under the License.
 #
 
-# Include cookbook dependencies
-%w{ ruby_build build-essential
-    readline sudo nginx openssh xml zlib python::package python::pip
-    redisio::install redisio::enable }.each do |requirement|
+case node['platform_family']
+when 'debian'
+  include_recipe 'apt'
+when 'rhel'
+  include_recipe 'yum::epel'
+end
+
+node['gitlab']['cookbook_dependencies'].each do |requirement|  
   include_recipe requirement
 end
 
@@ -30,7 +34,7 @@ link "/usr/bin/redis-cli" do
   to "/usr/local/bin/redis-cli"
 end
 
-# There are problems deploying on Redhat provided rubies.
+# The vendor recommended Ruby is >= 2.0.0 
 # We'll use Fletcher Nichol's slick ruby_build cookbook to compile a Ruby.
 if node['gitlab']['install_ruby'] !~ /package/
   # build ruby
@@ -51,11 +55,6 @@ if node['gitlab']['install_ruby'] !~ /package/
   ENV['PATH'] = "/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin:/usr/local/ruby/#{node['gitlab']['install_ruby']}/bin"
 end
 
-# Add the gitlab user
-gem_package "ruby-shadow" do
-  action :install
-end
-
 user node['gitlab']['user'] do
   comment "Gitlab User"
   home node['gitlab']['home']
@@ -63,13 +62,11 @@ user node['gitlab']['user'] do
   supports :manage_home => true
 end
 
-# Configure Git 
-execute "gitlab-configure-git" do
-  command "git config --global user.name \"GitLab\" && git config --global user.email \"#{node['gitlab']['email_from']}\""
-  cwd node['gitlab']['app_home']
-  user node['gitlab']['user']
+template "#{node['gitlab']['home']}/.gitconfig" do
+  source "gitconfig.erb"
+  owner node['gitlab']['user']
   group node['gitlab']['group']
-  environment ({'HOME' => node['gitlab']['home']})
+  mode 0644
 end
 
 # Install required packages for Gitlab
@@ -83,15 +80,10 @@ chef_gem "sshkey" do
 end
 
 # Install required Ruby Gems for Gitlab
-%w{ charlock_holmes bundler rake }.each do |gempkg|
+%w[ charlock_holmes ].each do |gempkg|
   gem_package gempkg do
     action :install
   end
-end
-
-# Install pygments from pip
-python_pip "pygments" do
-  action :install
 end
 
 # Fix home permissions for nginx
@@ -248,7 +240,6 @@ template "/etc/init.d/gitlab" do
   mode 0755
   source "gitlab.init.erb"
   variables(
-      :fqdn => node['fqdn'],
       :gitlab_app_home => node['gitlab']['app_home'],
       :gitlab_user => node['gitlab']['user']
   )

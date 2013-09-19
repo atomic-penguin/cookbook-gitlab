@@ -4,6 +4,7 @@
 #
 # Copyright 2012, Gerald L. Hevener Jr., M.S.
 # Copyright 2012, Eric G. Wolfe
+# Copyright 2013, Johannes Becker
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,15 +21,15 @@
 # Set attributes for the git user
 default['gitlab']['user'] = "git"
 default['gitlab']['group'] = "git"
-default['gitlab']['home'] = "/home/git"
+default['gitlab']['home'] = "/srv/git"
 default['gitlab']['app_home'] = default['gitlab']['home'] + '/gitlab'
 default['gitlab']['web_fqdn'] = nil
-default['gitlab']['email_from'] = "gitlab@example.com"
-default['gitlab']['support_email'] = "support@example.com"
+default['gitlab']['email_from'] = "gitlab@#{node['domain']}"
+default['gitlab']['support_email'] = "gitlab-support@#{node['domain']}"
 
 # Set github URL for gitlab
 default['gitlab']['git_url'] = "git://github.com/gitlabhq/gitlabhq.git"
-default['gitlab']['git_branch'] = "6-0-stable"
+default['gitlab']['git_branch'] = "6-1-stable"
 
 # gitlab-shell attributes
 default['gitlab']['shell']['home'] = node['gitlab']['home'] + '/gitlab-shell'
@@ -44,46 +45,37 @@ default['gitlab']['database']['pool'] = 5
 default['gitlab']['database']['database'] = "gitlab"
 default['gitlab']['database']['username'] = "gitlab"
 
-# Required packages for Gitlab
-case node['platform']
-  when "ubuntu","debian"
-    default['gitlab']['packages'] = %w{
-    build-essential zlib1g-dev libyaml-dev libssl-dev libgdbm-dev
-    libreadline-dev libncurses5-dev libffi-dev curl git-core
-    openssh-server redis-server checkinstall libxml2-dev libxslt-dev
-    libcurl4-openssl-dev libicu-dev wget python2.7 python-docutils
-    ruby1.9.1 ruby1.9.1-dev
-  }
-  when "redhat","centos","amazon","scientific"
-    case node['platform_version'].to_i
-      when 5
-        default['gitlab']['packages'] = %w{
-      curl wget libxslt-devel sqlite-devel openssl-devel
-      mysql++-devel libicu-devel glibc-devel libyaml-devel
-      python26 python26-devel
-    }
-      when 6
-        default['gitlab']['packages'] = %w{
-      curl wget libxslt-devel sqlite-devel openssl-devel
-      mysql++-devel libicu-devel glibc-devel
-      libyaml-devel python python-devel
-    }
-    end
-  else
-    default['gitlab']['packages'] = %w{
-    curl wget checkinstall libxslt-dev libsqlite3-dev
-    libcurl4-openssl-dev libssl-dev libmysql++-dev
-    libicu-dev libc6-dev libyaml-dev python
-    python-dev ruby1.9.1 ruby1.9.1-dev
-  }
-end
+default['gitlab']['install_ruby'] = "2.0.0-p247"
+default['gitlab']['cookbook_dependencies'] = %w[
+  build-essential zlib readline ncurses git openssh
+  redisio::install redisio::enable xml python::package python::pip
+  ruby_build sudo postfix nginx
+]
 
-# Problems deploying this on RedHat provided rubies.
-case node['platform']
-  when "redhat","centos","scientific","amazon"
-    default['gitlab']['install_ruby'] = "1.9.2-p290"
-  else
-    default['gitlab']['install_ruby'] = "package"
+# Required packages for Gitlab
+case node['platform_family']
+when 'debian'
+  default['gitlab']['packages'] = %w[
+    libyaml-dev libssl-dev libgdbm-dev libffi-dev checkinstall
+    curl libcurl4-openssl-dev libicu-dev wget
+  ]
+when "rhel"
+  default['gitlab']['packages'] = %w[
+    libyaml-devel openssl-devel gdbm-devel libffi-devel
+    curl libcurl-devel libicu-devel wget
+  ]
+else
+  default['gitlab']['install_ruby'] = "package"
+  default['gitlab']['cookbook_dependencies'] = %w[
+    build-essential git openssh readline xml zlib sudo ruby_build nginx
+    python::package python::pip redisio::install redisio::enable
+  ]
+  default['gitlab']['packages'] = %w[
+    build-essential zlib1g-dev libyaml-dev libssl-dev libgdbm-dev
+    libreadline-dev libncurses5-dev libffi-dev curl git-core openssh-server
+    redis-server checkinstall libxml2-dev libxslt-dev libcurl4-openssl-dev
+    libicu-dev
+  ]
 end
 
 default['gitlab']['trust_local_sshkeys'] = "yes"
