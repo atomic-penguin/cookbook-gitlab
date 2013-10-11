@@ -178,7 +178,16 @@ template "#{node['gitlab']['app_home']}/config/gitlab.yml" do
       :git_user => node['gitlab']['user'],
       :git_home => node['gitlab']['home'],
       :backup_path => node['gitlab']['backup_path'],
-      :backup_keep_time => node['gitlab']['backup_keep_time']
+      :backup_keep_time => node['gitlab']['backup_keep_time'],
+      :ldap_enabled => node['gitlab']['ldap']['enabled'],
+      :ldap_host => node['gitlab']['ldap']['host'],
+      :ldap_base => node['gitlab']['ldap']['base'],
+      :ldap_port => node['gitlab']['ldap']['port'],
+      :ldap_uid => node['gitlab']['ldap']['uid'],
+      :ldap_method => node['gitlab']['ldap']['method'],
+      :ldap_bind_dn => node['gitlab']['ldap']['bind_dn'],
+      :ldap_password => node['gitlab']['ldap']['password'],
+      :ldap_allow_username_or_email_login => node['gitlab']['ldap']['allow_username_or_email_login']
   )
 end
 
