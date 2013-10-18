@@ -98,15 +98,15 @@ production: &base
 
   ## LDAP settings
   ldap:
-    enabled: false
-    host: '_your_ldap_server'
-    base: '_the_base_where_you_search_for_users'
-    port: 636
-    uid: 'sAMAccountName'
-    method: 'ssl' # "ssl" or "plain"
-    bind_dn: '_the_full_dn_of_the_user_you_will_bind_with'
-    password: '_the_password_of_the_bind_user'
-    allow_username_or_email_login: true
+    enabled: <%= @ldap_enabled %>
+    host: <%= @ldap_host %>
+    base: <%= @ldap_base %>
+    port: <%= @ldap_port %>
+    uid: <%= @ldap_uid %>
+    method: <%= @ldap_method %>
+    bind_dn: <%= @ldap_bind_dn %>
+    password: <%= @ldap_password %>
+    allow_username_or_email_login: <%= @ldap_allow_username_or_email_login %>
 
   ## OmniAuth settings
   omniauth:
@@ -144,7 +144,7 @@ production: &base
   # GitLab Satellites
   satellites:
     # Relative paths are relative to Rails.root (default: tmp/repo_satellites/)
-    path: /home/git/gitlab-satellites/
+    path: <%= @git_home %>/gitlab-satellites/
 
   ## Backup settings
   backup:
