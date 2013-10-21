@@ -25,6 +25,17 @@ when 'rhel'
   include_recipe 'yum::epel'
 end
 
+
+# Setup the database
+case node['gitlab']['database']['type']
+  when 'mysql'
+    include_recipe 'gitlab::mysql'
+  when 'postgres'
+    include_recipe 'gitlab::postgres'
+  else
+    Chef::Log.error "#{node['gitlab']['database']['type']} is not a valid type. Please use 'mysql' or 'postgres'!"
+end
+
 # Install the required packages via cookbook
 node['gitlab']['cookbook_dependencies'].each do |requirement|  
   include_recipe requirement
@@ -138,17 +149,6 @@ git node['gitlab']['app_home'] do
   action :checkout
   user node['gitlab']['user']
   group node['gitlab']['group']
-end
-
-
-# Setup the database
-case node['gitlab']['database']['type']
-  when 'mysql'
-    include_recipe 'gitlab::mysql'
-  when 'postgres'
-    include_recipe 'gitlab::postgres'
-  else
-    Chef::Log.error "#{node['gitlab']['database']['type']} is not a valid type. Please use 'mysql' or 'postgres'!"
 end
 
 # Write the database.yml
