@@ -103,3 +103,6 @@ default['gitlab']['ldap']['method'] = "ssl"
 default['gitlab']['ldap']['bind_dn'] = "_the_full_dn_of_the_user_you_will_bind_with"
 default['gitlab']['ldap']['password'] = "_the_password_of_the_bind_user"
 default['gitlab']['ldap']['allow_username_or_email_login'] = true
+
+# Gravatar
+default['gitlab']['gravatar']['enabled'] = true
