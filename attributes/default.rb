@@ -92,3 +92,14 @@ default['gitlab']['backup_keep_time'] = 604800
 # Ip and port nginx will be serving requests on
 default['gitlab']['listen_ip'] = "*"
 default['gitlab']['listen_port'] = nil
+
+# LDAP authentication
+default['gitlab']['ldap']['enabled'] = false
+default['gitlab']['ldap']['host'] = "_your_ldap_server"
+default['gitlab']['ldap']['base'] = "_the_base_where_you_search_for_users"
+default['gitlab']['ldap']['port'] = 636
+default['gitlab']['ldap']['uid'] = "sAMAccountName"
+default['gitlab']['ldap']['method'] = "ssl"
+default['gitlab']['ldap']['bind_dn'] = "_the_full_dn_of_the_user_you_will_bind_with"
+default['gitlab']['ldap']['password'] = "_the_password_of_the_bind_user"
+default['gitlab']['ldap']['allow_username_or_email_login'] = true
