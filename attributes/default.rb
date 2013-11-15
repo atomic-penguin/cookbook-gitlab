@@ -92,3 +92,6 @@ default['gitlab']['backup_keep_time'] = 604800
 # Ip and port nginx will be serving requests on
 default['gitlab']['listen_ip'] = "*"
 default['gitlab']['listen_port'] = nil
+
+# Gravatar
+default['gitlab']['gravatar']['enabled'] = true 

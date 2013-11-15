@@ -117,6 +117,11 @@ Attributes
     See [nginx server_name documentation](http://nginx.org/en/docs/http/server_names.html)
     for valid matching patterns.
 
+* gitlab['gravatar']['enabled']
+  - Use Gravatar to fetch user avatars 
+  - Options: "true", "false"
+  - Default "true"
+
 ### Database Attributes
 
 **Note**, most of the database attributes have sane defaults. You will only need to change these configuration options if
