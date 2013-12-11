@@ -88,7 +88,7 @@ production: &base
 
   ## Gravatar
   gravatar:
-    enabled: true                 # Use user avatar image from Gravatar.com (default: true)
+    enabled: <%= node['gitlab']['gravatar']['enabled'] %> # Use user avatar image from Gravatar.com (default: true)
     # plain_url: "http://..."     # default: http://www.gravatar.com/avatar/%{hash}?s=%{size}&d=mm
     # ssl_url:   "https://..."    # default: https://secure.gravatar.com/avatar/%{hash}?s=%{size}&d=mm
 
@@ -98,19 +98,15 @@ production: &base
 
   ## LDAP settings
   ldap:
-  <% if node['gitlab']['ldap']['auth'] %>
-    enabled: true
-    host: '<%= @ldap['host'] %>'
-    base: '<%= @ldap['base'] %>'
-    port: <%= @ldap['port'] %>
-    uid: '<%= @ldap['uid'] %>'
-    method: <%= @ldap['method'] %>
-    bind_dn: '<%= @ldap['binddn'] %>'
-    password: '<%= @ldap['bindpw'] %>'
-    allow_username_or_email_login: true
-  <% else %>
-    enabled: false
-  <% end %>
+    enabled: <%= node['gitlab']['ldap']['enabled'] %>
+    host: <%= node['gitlab']['ldap']['host'] %>
+    base: <%= node['gitlab']['ldap']['base'] %>
+    port: <%= node['gitlab']['ldap']['port'] %>
+    uid: <%= node['gitlab']['ldap']['uid'] %>
+    method: <%= node['gitlab']['ldap']['method'] %> # "ssl" or "plain"
+    bind_dn: <%= node['gitlab']['ldap']['bind_dn'] %>
+    password: <%= node['gitlab']['ldap']['password'] %>
+    allow_username_or_email_login: <%= node['gitlab']['ldap']['allow_username_or_email_login'] %>
 
   ## OmniAuth settings
   omniauth:
@@ -148,7 +144,7 @@ production: &base
   # GitLab Satellites
   satellites:
     # Relative paths are relative to Rails.root (default: tmp/repo_satellites/)
-    path: /home/git/gitlab-satellites/
+    path: <%= @git_home %>/gitlab-satellites/
 
   ## Backup settings
   backup:

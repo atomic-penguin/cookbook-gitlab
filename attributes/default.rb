@@ -46,11 +46,12 @@ default['gitlab']['database']['pool'] = 5
 default['gitlab']['database']['database'] = "gitlab"
 default['gitlab']['database']['username'] = "gitlab"
 
-default['gitlab']['install_ruby'] = "1.9.3-p448"
+default['gitlab']['install_ruby'] = "1.9.3-p484"
+default['gitlab']['install_ruby_path'] = node['gitlab']['home']
 default['gitlab']['cookbook_dependencies'] = %w[
   build-essential zlib readline ncurses git openssh
   redisio::install redisio::enable xml python::package python::pip
-  ruby_build sudo
+  ruby_build 
 ]
 
 # Required packages for Gitlab
@@ -58,12 +59,12 @@ case node['platform_family']
 when 'debian'
   default['gitlab']['packages'] = %w[
     libyaml-dev libssl-dev libgdbm-dev libffi-dev checkinstall
-    curl libcurl4-openssl-dev libicu-dev wget python-docutils
+    curl libcurl4-openssl-dev libicu-dev wget python-docutils sudo
   ]
 when "rhel"
   default['gitlab']['packages'] = %w[
     libyaml-devel openssl-devel gdbm-devel libffi-devel
-    curl libcurl-devel libicu-devel wget python-docutils
+    curl libcurl-devel libicu-devel wget python-docutils sudo
   ]
 else
   default['gitlab']['install_ruby'] = "package"
@@ -75,7 +76,7 @@ else
     build-essential zlib1g-dev libyaml-dev libssl-dev libgdbm-dev
     libreadline-dev libncurses5-dev libffi-dev curl git-core openssh-server
     redis-server checkinstall libxml2-dev libxslt-dev libcurl4-openssl-dev
-    libicu-dev python-docutils
+    libicu-dev python-docutils sudo
   ]
 end
 
@@ -94,7 +95,16 @@ default['gitlab']['backup_keep_time'] = 604800
 default['gitlab']['listen_ip'] = "*"
 default['gitlab']['listen_port'] = nil
 
-default['gitlab']['ldap']['uid'] = 'uid' #sAMAccountName for ADs
-default['gitlab']['ldap']['auth'] = false
-default['gitlab']['ldap']['method'] = "plain"
-default['gitlab']['ldap']['port'] = "389"
+# LDAP authentication
+default['gitlab']['ldap']['enabled'] = false
+default['gitlab']['ldap']['host'] = "_your_ldap_server"
+default['gitlab']['ldap']['base'] = "_the_base_where_you_search_for_users"
+default['gitlab']['ldap']['port'] = 636
+default['gitlab']['ldap']['uid'] = "sAMAccountName"
+default['gitlab']['ldap']['method'] = "ssl"
+default['gitlab']['ldap']['bind_dn'] = "_the_full_dn_of_the_user_you_will_bind_with"
+default['gitlab']['ldap']['password'] = "_the_password_of_the_bind_user"
+default['gitlab']['ldap']['allow_username_or_email_login'] = true
+
+# Gravatar
+default['gitlab']['gravatar']['enabled'] = true 

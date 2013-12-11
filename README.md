@@ -117,6 +117,11 @@ Attributes
     See [nginx server_name documentation](http://nginx.org/en/docs/http/server_names.html)
     for valid matching patterns.
 
+* gitlab['gravatar']['enabled']
+  - Use Gravatar to fetch user avatars 
+  - Options: "true", "false"
+  - Default "true"
+
 ### Database Attributes
 
 **Note**, most of the database attributes have sane defaults. You will only need to change these configuration options if
@@ -153,6 +158,44 @@ is calculated.
   - The username for the database
   - Default `gitlab`
 
+### LDAP Authentication Attributes
+
+* `gitlab'['ldap']['enabled']`
+  - Use LDAP for authentication
+  - Default: false
+
+* `gitlab['ldap']['host']`
+  - Hostname of your LDAP server
+  - Default: "_your_ldap_server"
+
+* `gitlab['ldap']['base']`
+  - Base DN for users (e.g. dc=users,dc=example,dc=com)
+  - Default: "_the_base_where_you_search_for_users"
+
+* `gitlab['ldap']['port']`
+  - LDAP server port
+  - Default: 636
+
+* `gitlab['ldap']['uid']`
+  - User ID used when searching for users (e.g. uid, cn, or sAMAccountName)
+  - Default: "sAMAccountName"
+
+* `gitlab['ldap']['method']`
+  - Connection method used with LDAP server
+  - Options: "ssl", "plain"
+  - Default: "ssl"
+
+* `gitlab['ldap']['bind_dn']`
+  - Some servers require a username in order to bind
+  - Default: "_the_full_dn_of_the_user_you_will_bind_with"
+
+* `gitlab['ldap']['password']`
+  - Some servers require a password in order to bind
+  - Default: "_the_password_of_the_bind_user"
+
+* `gitlab['ldap']['allow_username_or_email_login']`
+  - If you want to allow users to login using both username and email address even though username (uid) will actually be used
+  - Default: true
 
 Usage
 =====

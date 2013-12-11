@@ -1,3 +1,24 @@
+## v6.1.10
+
+Bugs squashed:
+
+  * Re-order database components to fix Ubuntu Test-Kitchen run. #44
+  * Update port forwarding configuration in kitchen.yml. #46
+  * Update Satellite paths to fix Gitlab forking. #50
+  * ruby-build installs to node['gitlab']['home'], avoiding PATH hacks
+    for Rake.  Use node['gitlab']['install_ruby_path'] to override. #16
+  * ruby-build failing on 1.9.3-p448, bump version to 1.9.3-p484.
+  * Pinned yum dependency on < 3.0.0
+
+Features added:
+
+  * Add knob for disabling Gravatar. #51
+  * Add LDAP Authentication support. #49
+
+Removed:
+
+  * sudo cookbook dependency removed. #52
+
 ## v6.1.0
 
 Clean up some of the code to target [6-1-stable branch](https://github.com/gitlabhq/gitlabhq/blob/6-1-stable/doc/install/installation.md)

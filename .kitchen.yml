@@ -9,25 +9,22 @@ platforms:
 - name: ubuntu-13.04
   driver_config:
     network:
-    - ["forwarded_port", {guest: 80, host: 8080, guest: 443, host: 8443}]
+    - ["forwarded_port", {guest: 80, host: 8080}]
+    - ["forwarded_port", {guest: 443, host: 8443}]
   run_list:
   - recipe[apt]
 - name: ubuntu-12.04
   driver_config:
     network:
-    - ["forwarded_port", {guest: 80, host: 8081, guest: 443, host: 8444}]
-  run_list:
-  - recipe[apt]
-- name: ubuntu-10.04
-  driver_config:
-    network:
-    - ["forwarded_port", {guest: 80, host: 8082, guest: 443, host: 8445}]
+    - ["forwarded_port", {guest: 80, host: 8081}]
+    - ["forwarded_port", {guest: 443, host: 8444}]
   run_list:
   - recipe[apt]
 - name: centos-6.4
   driver_config:
     network:
-    - ["forwarded_port", {guest: 80, host: 8083, guest: 443, host: 8446}]
+    - ["forwarded_port", {guest: 80, host: 8082}]
+    - ["forwarded_port", {guest: 443, host: 8445}]
   run_list:
   - recipe[yum::epel]
 
@@ -46,7 +43,7 @@ suites:
         - sudo
         - wheel
 - name: https
-  data_bag_path: "test/integration/default/data_bags"
+  data_bags_path: "test/integration/default/data_bags"
   encrypted_data_bag_secret_key_path: "test/integration/default/encrypted_data_bag_secret"
   run_list: ["recipe[mysql::server]", "recipe[gitlab]"]
   attributes:
