@@ -190,8 +190,7 @@ template "#{node['gitlab']['app_home']}/config/gitlab.yml" do
       :git_user => node['gitlab']['user'],
       :git_home => node['gitlab']['home'],
       :backup_path => node['gitlab']['backup_path'],
-      :backup_keep_time => node['gitlab']['backup_keep_time'],
-      :ldap => ldap
+      :backup_keep_time => node['gitlab']['backup_keep_time']
   )
 end
 
