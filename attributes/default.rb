@@ -86,6 +86,7 @@ default['gitlab']['https'] = false
 default['gitlab']['certificate_databag_id'] = nil
 default['gitlab']['ssl_certificate'] = "/etc/nginx/ssl/certs/#{node['fqdn']}.pem"
 default['gitlab']['ssl_certificate_key'] = "/etc/nginx/ssl/private/#{node['fqdn']}.key"
+default['gitlab']['ssl_self_signed'] = "false"
 
 default['gitlab']['backup_path'] = node['gitlab']['app_home'] + "/backups"
 default['gitlab']['backup_keep_time'] = 604800
