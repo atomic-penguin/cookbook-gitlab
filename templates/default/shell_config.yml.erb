@@ -2,14 +2,14 @@
 user: <%= node['gitlab']['user'] %>
 
 # Url to gitlab instance. Used for api calls. Should end with a slash.
-gitlab_url: "http://<%= @fqdn %>/" 
+gitlab_url: "http<%= node['gitlab']['https']?'s':''%>://<%= @fqdn %>/" 
 
 http_settings:
 #  user: someone
 #  password: somepass
 #  ca_file: /etc/ssl/cert.pem
 #  ca_path: /etc/pki/tls/certs
-  self_signed_cert: false
+  self_signed_cert: <%= node['gitlab']['ssl_self_signed'] %>
 
 # Repositories path
 # REPOS_PATH MUST NOT BE A SYMLINK!!!
