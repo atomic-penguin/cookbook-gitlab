@@ -62,3 +62,30 @@ suites:
         groups:
         - sudo
         - wheel
+- name: ldap_auth
+  run_list: 
+    - recipe[mysql::server]
+    - recipe[openldap::server]
+    - recipe[gitlab]
+  attributes:
+    mysql:
+      server_debian_password: test
+      server_backup_password: test
+      server_root_password: test
+      server_repl_password: test
+    gitlab:
+      ldap:
+        enabled: true
+        host: localhost
+        base: "dc=example,dc=com"
+        bind_dn: = "anon_user"
+        password: "anon_password" 
+    openldap:
+      rootpw: secretsauce
+      roothash: "{SSHA}6BjlvtSbVCL88li8IorkqMSofkLio58/" 
+      preseed_dir: "/tmp/does_not_exist"
+    authorization:
+      sudo:
+        groups:
+        - sudo
+        - wheel
