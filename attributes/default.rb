@@ -96,6 +96,7 @@ default['gitlab']['listen_port'] = nil
 
 # LDAP authentication
 default['gitlab']['ldap']['enabled'] = false
+default['gitlab']['ldap']['autoconfig'] = false
 default['gitlab']['ldap']['host'] = "_your_ldap_server"
 default['gitlab']['ldap']['base'] = "_the_base_where_you_search_for_users"
 default['gitlab']['ldap']['port'] = 636

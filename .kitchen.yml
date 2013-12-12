@@ -100,3 +100,32 @@ suites:
         groups:
         - sudo
         - wheel
+
+- name: ldap_auth_no_ssl_autoconfig
+  run_list: 
+    - recipe[mysql::server]
+    - recipe[openldap::server]
+    - recipe[gitlab]
+  attributes:
+    mysql:
+      server_debian_password: test
+      server_backup_password: test
+      server_root_password: test
+      server_repl_password: test
+    gitlab:
+      ldap:
+        enabled: true
+        autoconfig: true
+        port: 389
+        bind_dn: = "anon_user"
+        password: "anon_password" 
+    openldap:
+      tls_enabled: false
+      rootpw: secretsauce
+      roothash: "{SSHA}6BjlvtSbVCL88li8IorkqMSofkLio58/" 
+      preseed_dir: "/tmp/does_not_exist"
+    authorization:
+      sudo:
+        groups:
+        - sudo
+        - wheel
