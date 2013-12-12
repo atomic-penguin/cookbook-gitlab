@@ -27,6 +27,15 @@ platforms:
     - ["forwarded_port", {guest: 443, host: 8445}]
   run_list:
   - recipe[yum::epel]
+- name: debian-7.2
+  driver_config:
+    box: opscode-debian-7.2
+    box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_debian-7.2.0_chef-provisionerless.box
+    network:
+    - ["forwarded_port", {guest: 80, host: 8083}]
+    - ["forwarded_port", {guest: 443, host: 8446}]
+  run_list:
+  - recipe[apt]
 
 suites:
 - name: default
