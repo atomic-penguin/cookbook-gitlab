@@ -87,8 +87,9 @@ suites:
         enabled: true
         host: localhost
         port: 389
+        method: "plain"
         base: "dc=example,dc=com"
-        bind_dn: = "anon_user"
+        bind_dn: "anon_user"
         password: "anon_password" 
     openldap:
       tls_enabled: false
