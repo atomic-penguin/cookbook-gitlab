@@ -167,6 +167,16 @@ template "#{node['gitlab']['app_home']}/config/database.yml" do
   )
 end
 
+if node['gitlab']['ldap']['autoconfig']
+  if Chef::Config[:solo]
+    ldap_node = node
+  else
+    ldap_node = search(:node, "recipes:openldap\\:\\:server && domain:#{node['domain']}").first
+  end
+  node.set['gitlab']['ldap']['host'] = ldap_node['fqdn']
+  node.set['gitlab']['ldap']['base'] = ldap_node['openldap']['basedn']
+end
+
 # Render gitlab config file
 template "#{node['gitlab']['app_home']}/config/gitlab.yml" do
   owner node['gitlab']['user']
