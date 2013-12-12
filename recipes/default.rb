@@ -309,4 +309,5 @@ end
 # Enable and start unicorn_rails and nginx service
 service "gitlab" do
   action [ :enable, :start ]
+  subscribes :restart, "template[#{node['gitlab']['app_home']}/config/gitlab.yml]", :delayed
 end
