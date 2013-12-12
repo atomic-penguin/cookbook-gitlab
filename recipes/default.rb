@@ -176,7 +176,8 @@ if node['gitlab']['ldap']['autoconfig']
   node.set['gitlab']['ldap']['host'] = ldap_node['fqdn']
   node.set['gitlab']['ldap']['base'] = ldap_node['openldap']['basedn']
   node.set['gitlab']['ldap']['bind_dn'] = ldap_node['openldap']['anon_binddn']
-  node.set['gitlab']['ldap']['password'] = ldap_node['openldap']['anon_pass']  
+  node.set['gitlab']['ldap']['password'] = ldap_node['openldap']['anon_pass'] 
+# TODO method and port 
 end
 
 # Render gitlab config file
