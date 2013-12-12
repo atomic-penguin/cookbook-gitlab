@@ -117,7 +117,8 @@ suites:
         enabled: true
         autoconfig: true
         port: 389
-        bind_dn: = "anon_user"
+        method: "plain"
+        bind_dn: "anon_user"
         password: "anon_password" 
     openldap:
       tls_enabled: false
