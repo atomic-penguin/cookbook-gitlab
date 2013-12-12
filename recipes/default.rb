@@ -167,6 +167,19 @@ template "#{node['gitlab']['app_home']}/config/database.yml" do
   )
 end
 
+if node['gitlab']['ldap']['autoconfig']
+  if Chef::Config[:solo]
+    ldap_node = node
+  else
+    ldap_node = search(:node, "recipes:openldap\\:\\:users && domain:#{node['domain']}").first
+  end
+  node.set['gitlab']['ldap']['host'] = ldap_node['fqdn']
+  node.set['gitlab']['ldap']['base'] = ldap_node['openldap']['basedn']
+  node.set['gitlab']['ldap']['bind_dn'] = ldap_node['openldap']['anon_binddn']
+  node.set['gitlab']['ldap']['password'] = ldap_node['openldap']['anon_pass'] 
+# TODO method and port 
+end
+
 # Render gitlab config file
 template "#{node['gitlab']['app_home']}/config/gitlab.yml" do
   owner node['gitlab']['user']
@@ -309,4 +322,10 @@ end
 # Enable and start unicorn_rails and nginx service
 service "gitlab" do
   action [ :enable, :start ]
+  subscribes :restart, "template[#{node['gitlab']['app_home']}/config/gitlab.yml]", :delayed
 end
+
+link "/usr/bin/ruby" do
+  to "/usr/local/ruby/#{node['gitlab']['install_ruby']}/bin/ruby"
+end
+

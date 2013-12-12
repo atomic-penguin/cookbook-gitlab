@@ -1,7 +1,6 @@
 ---
 driver_plugin: vagrant 
 driver_config:
-  require_chef_omnibus: latest
   customize:
     memory: 1024 
 
@@ -27,6 +26,15 @@ platforms:
     - ["forwarded_port", {guest: 443, host: 8445}]
   run_list:
   - recipe[yum::epel]
+- name: debian-7.2
+  driver_config:
+    box: opscode-debian-7.2
+    box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_debian-7.2.0_chef-provisionerless.box
+    network:
+    - ["forwarded_port", {guest: 80, host: 8083}]
+    - ["forwarded_port", {guest: 443, host: 8446}]
+  run_list:
+  - recipe[apt]
 
 suites:
 - name: default
@@ -57,6 +65,65 @@ suites:
       certificate_databag_id: test
       database:
         password: test
+    authorization:
+      sudo:
+        groups:
+        - sudo
+        - wheel
+
+- name: ldap_auth_no_ssl
+  run_list: 
+    - recipe[mysql::server]
+    - recipe[openldap::server]
+    - recipe[gitlab]
+  attributes:
+    mysql:
+      server_debian_password: test
+      server_backup_password: test
+      server_root_password: test
+      server_repl_password: test
+    gitlab:
+      ldap:
+        enabled: true
+        host: localhost
+        port: 389
+        method: "plain"
+        base: "dc=example,dc=com"
+        bind_dn: "anon_user"
+        password: "anon_password" 
+    openldap:
+      tls_enabled: false
+      rootpw: secretsauce
+      roothash: "{SSHA}6BjlvtSbVCL88li8IorkqMSofkLio58/" 
+      preseed_dir: "/tmp/does_not_exist"
+    authorization:
+      sudo:
+        groups:
+        - sudo
+        - wheel
+
+- name: ldap_auth_no_ssl_autoconfig
+  run_list: 
+    - recipe[mysql::server]
+    - recipe[openldap::server]
+    - recipe[gitlab]
+  attributes:
+    mysql:
+      server_debian_password: test
+      server_backup_password: test
+      server_root_password: test
+      server_repl_password: test
+    gitlab:
+      ldap:
+        enabled: true
+        autoconfig: true
+        port: 389
+        method: "plain"
+    openldap:
+      tls_enabled: false
+      rootpw: secretsauce
+      roothash: "{SSHA}6BjlvtSbVCL88li8IorkqMSofkLio58/" 
+      preseed_dir: "/tmp/does_not_exist"
     authorization:
       sudo:
         groups:
