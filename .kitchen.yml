@@ -1,7 +1,6 @@
 ---
 driver_plugin: vagrant 
 driver_config:
-  require_chef_omnibus: latest
   customize:
     memory: 1024 
 
@@ -120,8 +119,6 @@ suites:
         autoconfig: true
         port: 389
         method: "plain"
-        bind_dn: "anon_user"
-        password: "anon_password" 
     openldap:
       tls_enabled: false
       rootpw: secretsauce
