@@ -71,7 +71,7 @@ suites:
         groups:
         - sudo
         - wheel
-- name: ldap_auth
+- name: ldap_auth_no_ssl
   run_list: 
     - recipe[mysql::server]
     - recipe[openldap::server]
@@ -86,10 +86,12 @@ suites:
       ldap:
         enabled: true
         host: localhost
+        port: 389
         base: "dc=example,dc=com"
         bind_dn: = "anon_user"
         password: "anon_password" 
     openldap:
+      tls_enabled: false
       rootpw: secretsauce
       roothash: "{SSHA}6BjlvtSbVCL88li8IorkqMSofkLio58/" 
       preseed_dir: "/tmp/does_not_exist"
