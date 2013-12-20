@@ -32,6 +32,7 @@ end
 database = node['gitlab']['database']['database']
 database_user = node['gitlab']['database']['username']
 database_password = node['gitlab']['database']['password']
+database_userhost = node['gitlab']['database']['userhost']
 database_host = node['gitlab']['database']['host']
 database_connection = {
   :host     => database_host,
@@ -49,6 +50,7 @@ end
 mysql_database_user database_user do
   connection      database_connection
   password        database_password
+  host            database_userhost
   database_name   database
   action          :create
 end

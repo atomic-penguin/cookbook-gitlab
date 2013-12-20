@@ -45,6 +45,7 @@ default['gitlab']['database']['host'] = "localhost"
 default['gitlab']['database']['pool'] = 5
 default['gitlab']['database']['database'] = "gitlab"
 default['gitlab']['database']['username'] = "gitlab"
+default['gitlab']['database']['userhost'] = "localhost"
 
 default['gitlab']['install_ruby'] = "1.9.3-p484"
 default['gitlab']['install_ruby_path'] = node['gitlab']['home']
