@@ -1,4 +1,5 @@
 site :opscode
+cookbook 'yum-epel', github: 'opscode-cookbooks/yum-epel'
 
 metadata
 

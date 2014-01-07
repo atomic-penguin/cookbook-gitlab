@@ -22,9 +22,8 @@ case node['platform_family']
 when 'debian'
   include_recipe 'apt'
 when 'rhel'
-  include_recipe 'yum::epel'
+  include_recipe 'yum-epel'
 end
-
 
 # Setup the database
 case node['gitlab']['database']['type']
@@ -37,7 +36,7 @@ case node['gitlab']['database']['type']
 end
 
 # Install the required packages via cookbook
-node['gitlab']['cookbook_dependencies'].each do |requirement|  
+node['gitlab']['cookbook_dependencies'].each do |requirement|
   include_recipe requirement
 end
 
