@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+include_recipe 'mysql::server'
 include_recipe 'mysql::ruby'
 
 # Enable secure password generation
