@@ -205,6 +205,18 @@ end
   end
 end
 
+without_group = node['gitlab']['database']['type'] == 'mysql' ? 'postgres' : 'mysql'
+
+# Install Gems with bundle install
+execute 'gitlab-bundle-install' do
+  command "bundle install --deployment --without development test #{without_group} aws"
+  cwd node['gitlab']['app_home']
+  user node['gitlab']['user']
+  group node['gitlab']['group']
+  environment('LANG' => 'en_US.UTF-8', 'LC_ALL' => 'en_US.UTF-8')
+  not_if { File.exists?("#{node['gitlab']['app_home']}/vendor/bundle") }
+end
+
 # Precompile assets
 execute 'gitlab-bundle-precompile-assets' do
   command 'bundle exec rake assets:precompile RAILS_ENV=production'
@@ -259,18 +271,6 @@ template "#{node['gitlab']['app_home']}/config/unicorn.rb" do
       fqdn: node['fqdn'],
       gitlab_app_home: node['gitlab']['app_home']
   )
-end
-
-without_group = node['gitlab']['database']['type'] == 'mysql' ? 'postgres' : 'mysql'
-
-# Install Gems with bundle install
-execute 'gitlab-bundle-install' do
-  command "bundle install --deployment --without development test #{without_group} aws"
-  cwd node['gitlab']['app_home']
-  user node['gitlab']['user']
-  group node['gitlab']['group']
-  environment('LANG' => 'en_US.UTF-8', 'LC_ALL' => 'en_US.UTF-8')
-  not_if { File.exists?("#{node['gitlab']['app_home']}/vendor/bundle") }
 end
 
 # Initialize database

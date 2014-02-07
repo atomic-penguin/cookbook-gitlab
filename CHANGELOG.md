@@ -1,3 +1,8 @@
+## v6.4.1
+
+  * Run bundle install before any bundle command. #63
+  * Bump gitlab to 6.4.1
+
 ## v6.4.0
 
   * Bump gitlab-shell to v1.8.0
