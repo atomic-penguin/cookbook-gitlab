@@ -134,6 +134,22 @@ Attributes
   - Options: "true", "false"
   - Default "true"
 
+### User privileges 
+
+**Note**, This attributes are useful when you want only admins to create projects and groups. And to restrict username changing.
+
+* default['gitlab']['default_projects_limit']
+  - When you create a user it takes this value as his **projects_limit** profile setting. 
+  - If you put it at 0, regular users can't create repos.
+
+* default['gitlab']['default_can_create_group'] = true
+  - When you create a user it takes this value as his **can_create_group** profile setting.
+  - Name is pretty explanatory about what it means :)
+
+* default['gitlab']['username_changing_enabled'] = false
+  - Disable users changing his username.
+  - This is **true** on a default gitlab install. 
+
 ### Database Attributes
 
 **Note**, most of the database attributes have sane defaults. You will only need to change these configuration options if
@@ -202,11 +218,13 @@ is calculated.
   - Default: "ssl"
 
 * `gitlab['ldap']['bind_dn']`
-  - Some servers require a username in order to bind
+  - Some servers require a username in order to bind.
+  - Leave default if your server supports anonymous bind.
   - Default: "_the_full_dn_of_the_user_you_will_bind_with"
 
 * `gitlab['ldap']['password']`
   - Some servers require a password in order to bind
+  - Leave default if your server supports anonymous bind.
   - Default: "_the_password_of_the_bind_user"
 
 * `gitlab['ldap']['allow_username_or_email_login']`

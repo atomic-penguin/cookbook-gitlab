@@ -1,6 +1,14 @@
 Gitlab Cookbook Changelog
 =========================
 
+v6.4.3
+------
+
+* Include new user privileges attributes.
+* Some README.md points on LDAP auth when anonymous binding is enabled on server.
+* Fix Path issue when executing bundle. It was using chef-client embedded ruby instead gitlab one.
+  - Just adding the path to the giltab bin directory at the beginning of the command.
+
 v6.4.2
 ------
 

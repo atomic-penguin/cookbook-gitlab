@@ -39,9 +39,9 @@ production: &base
     support_email: <%= node['gitlab']['support_email'] %>
 
     ## User settings
-    default_projects_limit: 10
-    # default_can_create_group: false  # default: true
-    # username_changing_enabled: false # default: true - User can change her username/namespace
+    default_projects_limit: <%= default['gitlab']['default_projects_limit'] %>
+    default_can_create_group: <%= default['gitlab']['default_can_create_group'] %>  # default: true
+    username_changing_enabled: <%= default['gitlab']['username_changing_enabled'] %> # default: true - User can change her username/namespace
 
     ## Users management
     # signup_enabled: true          # default: false - Account passwords are not sent via the email if signup is enabled.

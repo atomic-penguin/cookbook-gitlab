@@ -308,12 +308,13 @@ execute 'gitlab-bundle-rake' do
 end
 
 # Use certificate cookbook for keys
-certificate_manage node['gitlab']['certificate_databag_id'] do
-  cert_path '/etc/nginx/ssl'
-  owner node['gitlab']['user']
-  group node['gitlab']['user']
-  nginx_cert true
-  only_if { node['gitlab']['https'] && !node['gitlab']['certificate_databag_id'].nil? }
+if  node['gitlab']['https'] && !node['gitlab']['certificate_databag_id'].nil? 
+  certificate_manage node['gitlab']['certificate_databag_id'] do
+    cert_path '/etc/nginx/ssl'
+    owner node['gitlab']['user']
+    group node['gitlab']['user']
+    nginx_cert true
+  end
 end
 
 # Create nginx directories before dropping off templates
