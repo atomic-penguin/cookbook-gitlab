@@ -72,7 +72,7 @@ when 'rhel'
 else
   default['gitlab']['install_ruby'] = 'package'
   default['gitlab']['cookbook_dependencies'] = %w[
-    build-essential git openssh readline xml zlib sudo ruby_build
+    build-essential git openssh readline xml zlib ruby_build
     redisio::install redisio::enable
   ]
   default['gitlab']['packages'] = %w[
