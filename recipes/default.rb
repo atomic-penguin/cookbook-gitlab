@@ -310,7 +310,7 @@ execute 'gitlab-bundle-rake' do
 end
 
 # Use certificate cookbook for keys
-certificate_manage node['gitlab']['certificate_databag_id'] do
+certificate_manage "#{node['gitlab']['certificate_databag_id']}" do
   cert_path '/etc/nginx/ssl'
   owner node['gitlab']['user']
   group node['gitlab']['user']
