@@ -7,10 +7,12 @@ name             'gitlab'
 version          '6.4.6'
 
 %w[build-essential zlib readline ncurses git openssh redisio xml
-   ruby_build certificate database logrotate mysql nginx
+   ruby_build certificate database logrotate nginx
    postgresql apt yum-epel].each do |cb_depend|
   depends cb_depend
 end
+
+depends 'mysql', '= 4.1.2'
 
 %w[ redhat centos scientific amazon debian ubuntu ].each do |os|
   supports os
