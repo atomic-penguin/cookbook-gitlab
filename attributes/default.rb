@@ -35,12 +35,12 @@ default['gitlab']['username_changing_enabled'] = true
 
 # Set github URL for gitlab
 default['gitlab']['git_url'] = 'git://github.com/gitlabhq/gitlabhq.git'
-default['gitlab']['git_branch'] = '6-9-stable'
+default['gitlab']['git_branch'] = '7-7-stable'
 
 # gitlab-shell attributes
 default['gitlab']['shell']['home'] = node['gitlab']['home'] + '/gitlab-shell'
 default['gitlab']['shell']['git_url'] = 'git://github.com/gitlabhq/gitlab-shell.git'
-default['gitlab']['shell']['git_branch'] = 'v1.9.4'
+default['gitlab']['shell']['git_branch'] = 'v2.4.1'
 
 # Database setup
 default['gitlab']['database']['type'] = 'mysql'
@@ -59,7 +59,7 @@ default['gitlab']['install_ruby'] = '1.9.3-p484'
 default['gitlab']['install_ruby_path'] = node['gitlab']['home']
 default['gitlab']['cookbook_dependencies'] = %w(
   zlib readline ncurses openssh
-  logrotate redisio::install redisio::enable ruby_build
+  logrotate redisio::install redisio::configure redisio::enable ruby_build
 )
 
 # Required packages for Gitlab
@@ -68,17 +68,19 @@ when 'debian'
   default['gitlab']['packages'] = %w(
     libyaml-dev libssl-dev libgdbm-dev libffi-dev checkinstall
     curl libcurl4-openssl-dev libicu-dev wget python-docutils sudo
+    cmake libkrb5-dev pkg-config
   )
 when 'rhel'
   default['gitlab']['packages'] = %w(
     libyaml-devel openssl-devel gdbm-devel libffi-devel
     curl libcurl-devel libicu-devel wget python-docutils sudo
+    cmake libkrb5-dev pkgconfig
   )
 else
   default['gitlab']['install_ruby'] = 'package'
   default['gitlab']['cookbook_dependencies'] = %w(
     openssh readline zlib ruby_build
-    redisio::install redisio::enable
+    redisio::install redisio::configure redisio::enable
   )
   default['gitlab']['packages'] = %w(
     autoconf binon flex gcc gcc-c++ make m4
@@ -86,7 +88,7 @@ else
     zlib1g-dev libyaml-dev libssl-dev libgdbm-dev
     libreadline-dev libncurses5-dev libffi-dev curl git-core openssh-server
     redis-server checkinstall libxml2-dev libxslt-dev libcurl4-openssl-dev
-    libicu-dev python-docutils sudo
+    libicu-dev python-docutils sudo cmake libkrb5-dev pkg-config
   )
 end
 
