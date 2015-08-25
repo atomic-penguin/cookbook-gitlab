@@ -4,7 +4,7 @@ license 'Apache 2.0'
 description 'Installs/Configures gitlab'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 name 'gitlab'
-version '7.7.1'
+version '7.7.4'
 
 %w(build-essential zlib readline ncurses git openssh redisio xml
    ruby_build certificate database logrotate nginx

@@ -23,10 +23,11 @@ default['gitlab']['user'] = 'git'
 default['gitlab']['group'] = 'git'
 default['gitlab']['home'] = '/srv/git'
 default['gitlab']['app_home'] = default['gitlab']['home'] + '/gitlab'
-default['gitlab']['web_fqdn'] = nil
+default['gitlab']['web_fqdn'] = node['fqdn']
 default['gitlab']['nginx_server_names'] = ['gitlab.*', node['fqdn']]
 default['gitlab']['email_from'] = "gitlab@#{node['domain']}"
 default['gitlab']['support_email'] = "gitlab-support@#{node['domain']}"
+default['gitlab']['unicorn']['timeout'] = 60
 
 # User default privileges
 default['gitlab']['default_projects_limit'] = 10
@@ -41,6 +42,7 @@ default['gitlab']['git_branch'] = '7-7-stable'
 default['gitlab']['shell']['home'] = node['gitlab']['home'] + '/gitlab-shell'
 default['gitlab']['shell']['git_url'] = 'git://github.com/gitlabhq/gitlab-shell.git'
 default['gitlab']['shell']['git_branch'] = 'v2.4.1'
+default['gitlab']['shell']['gitlab_host'] = nil
 
 # Database setup
 default['gitlab']['database']['type'] = 'mysql'

@@ -9,7 +9,7 @@ working_directory app_dir
 preload_app true
 
 # nuke workers after 60 seconds (the default)
-timeout 60
+timeout <%= @gitlab_unicorn_timeout %>
 
 # listen on a Unix domain socket and/or a TCP port,
 

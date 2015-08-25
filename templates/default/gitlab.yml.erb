@@ -135,8 +135,8 @@ production: &base
         port: <%= node['gitlab']['ldap']['port'] %>
         uid: <%= node['gitlab']['ldap']['uid'] %>
         method: <%= node['gitlab']['ldap']['method'] %> # "ssl" or "plain"
-        <% if !node['gitlab']['ldap']['password'].nil? || node['gitlab']['ldap']['bind_dn'].start_with?('_') %># <% end %>bind_dn: <%= node['gitlab']['ldap']['bind_dn'] %>
-        <% if !node['gitlab']['ldap']['password'].nil? || node['gitlab']['ldap']['password'].start_with?('_') %># <% end %>password: <%= node['gitlab']['ldap']['password'] %>
+        <% if node['gitlab']['ldap']['password'].nil? || node['gitlab']['ldap']['bind_dn'].start_with?('_') %># <% end %>bind_dn: <%= node['gitlab']['ldap']['bind_dn'] %>
+        <% if node['gitlab']['ldap']['password'].nil? || node['gitlab']['ldap']['password'].start_with?('_') %># <% end %>password: <%= node['gitlab']['ldap']['password'] %>
 
         # This setting specifies if LDAP server is Active Directory LDAP server.
         # For non AD servers it skips the AD specific queries.

@@ -133,6 +133,14 @@ Attributes
   - Options: "true", "false"
   - Default "true"
 
+* `gitlab['unicorn']['timeout']`
+  - Timeout in seconds to Unicorn
+  - Default: 60
+
+* `gitlab['shell']['gitlab_host']`
+  - Custom hostname for Gitlab Shell
+  - Default: nil (To be overwritten by `gitalb['web_fqdn']` or `node['fqdn']`)
+
 ### User privileges
 
 **Note**, This attributes are useful when you want only admins to create projects and groups. And to restrict username changing.

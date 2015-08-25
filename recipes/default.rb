@@ -137,11 +137,16 @@ git node['gitlab']['shell']['home'] do
   group node['gitlab']['group']
 end
 
-# Either listen_port has been configured elsewhere or we calculate it depending on the https flag
-listen_port = node['gitlab']['listen_port'] || (node['gitlab']['https'] ? 443 : 80)
+# Either listen_port has been configured elsewhere or we calculate it
+# depending on the https flag
+listen_port = \
+  node['gitlab']['listen_port'] || (node['gitlab']['https'] ? 443 : 80)
 
-# Address of gitlab api for which gitlab-shell should connect
-api_fqdn = node['gitlab']['web_fqdn'] || node['fqdn']
+# Address of gitlab api for which gitlab-shell should connect, prefered is
+# using custom URL. If prefered URL is defined we are using 'gitlab_host'
+# otherwise we just refer back to 'web_fqdn'.
+api_fqdn = \
+  node['gitlab']['shell']['gitlab_host'] || node['gitlab']['web_fqdn']
 
 # render gitlab-shell config
 template node['gitlab']['shell']['home'] + '/config.yml' do
@@ -233,8 +238,11 @@ end
 # logrotate gitlab-shell and gitlab
 logrotate_app 'gitlab' do
   frequency 'weekly'
-  path ["#{node['gitlab']['app_home']}/log/*.log",
-        "#{node['gitlab']['shell']['home']}/gitlab-shell.log"]
+  su node['gitlab']['user']
+  path [
+    "#{node['gitlab']['app_home']}/log/*.log",
+    "#{node['gitlab']['shell']['home']}/gitlab-shell.log"
+  ]
   rotate 52
   options %w(compress delaycompress notifempty copytruncate)
 end
@@ -272,7 +280,8 @@ template "#{node['gitlab']['app_home']}/config/unicorn.rb" do
   mode '0644'
   variables(
     fqdn: node['fqdn'],
-    gitlab_app_home: node['gitlab']['app_home']
+    gitlab_app_home: node['gitlab']['app_home'],
+    gitlab_unicorn_timeout: node['gitlab']['unicorn']['timeout']
   )
 end
 
