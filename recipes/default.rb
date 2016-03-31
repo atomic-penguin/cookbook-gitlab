@@ -450,6 +450,7 @@ end
 # Look for `search_id` in data_bag `certificates`
 certificate_manage 'gitlab' do
   search_id node['gitlab']['certificate_databag_id']
+  data_bag_type node['gitlab']['certificate_databag_type']
   cert_path '/etc/nginx/ssl'
   owner node['gitlab']['user']
   group node['gitlab']['user']
