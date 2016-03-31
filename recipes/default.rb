@@ -26,13 +26,15 @@ when 'rhel'
 end
 
 # Setup the database connection
-case node['gitlab']['database']['type']
-when 'mysql'
-  include_recipe 'gitlab::mysql'
-when 'postgres'
-  include_recipe 'gitlab::postgres'
-else
-  Chef::Log.error "#{node['gitlab']['database']['type']} is not a valid type. Please use 'mysql' or 'postgres'!"
+if node['gitlab']['database']['configure']
+  case node['gitlab']['database']['type']
+  when 'mysql'
+    include_recipe 'gitlab::mysql'
+  when 'postgres'
+    include_recipe 'gitlab::postgres'
+  else
+    Chef::Log.error "#{node['gitlab']['database']['type']} is not a valid type. Please use 'mysql' or 'postgres'!"
+  end
 end
 
 # Install SELinux tools where appropriate

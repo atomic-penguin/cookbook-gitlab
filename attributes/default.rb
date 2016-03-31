@@ -45,6 +45,7 @@ default['gitlab']['shell']['git_branch'] = 'v2.6.10'
 default['gitlab']['shell']['gitlab_host'] = nil
 
 # Database setup
+default['gitlab']['database']['configure'] = true
 default['gitlab']['database']['type'] = 'mysql'
 default['gitlab']['database']['adapter'] = node['gitlab']['database']['type'] == 'mysql' ? 'mysql2' : 'postgresql'
 default['gitlab']['database']['encoding'] = node['gitlab']['database']['type'] == 'mysql' ? 'utf8' : 'unicode'
