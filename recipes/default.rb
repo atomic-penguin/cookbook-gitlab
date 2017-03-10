@@ -29,13 +29,15 @@ end
 include_recipe 'gitlab::git'
 
 # Setup the database connection
-case node['gitlab']['database']['type']
-when 'mysql'
-  include_recipe 'gitlab::mysql'
-when 'postgres'
-  include_recipe 'gitlab::postgres'
-else
-  Chef::Log.error "#{node['gitlab']['database']['type']} is not a valid type. Please use 'mysql' or 'postgres'!"
+if node['gitlab']['database']['configure']
+  case node['gitlab']['database']['type']
+  when 'mysql'
+    include_recipe 'gitlab::mysql'
+  when 'postgres'
+    include_recipe 'gitlab::postgres'
+  else
+    Chef::Log.error "#{node['gitlab']['database']['type']} is not a valid type. Please use 'mysql' or 'postgres'!"
+  end
 end
 
 # Install SELinux tools where appropriate
@@ -415,6 +417,7 @@ end
 # Look for `search_id` in data_bag `certificates`
 certificate_manage 'gitlab' do
   search_id node['gitlab']['certificate_databag_id']
+  data_bag_type node['gitlab']['certificate_databag_type']
   cert_path '/etc/nginx/ssl'
   owner node['gitlab']['user']
   group node['gitlab']['user']

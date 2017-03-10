@@ -43,6 +43,7 @@ default['gitlab']['shell']['git_branch'] = 'v4.1.1'
 default['gitlab']['shell']['gitlab_host'] = nil
 
 # Database setup
+default['gitlab']['database']['configure'] = true
 default['gitlab']['database']['type'] = 'mysql'
 default['gitlab']['database']['adapter'] = node['gitlab']['database']['type'] == 'mysql' ? 'mysql2' : 'postgresql'
 default['gitlab']['database']['encoding'] = node['gitlab']['database']['type'] == 'mysql' ? 'utf8' : 'unicode'
@@ -126,6 +127,7 @@ default['gitlab']['trust_local_sshkeys'] = 'yes'
 
 default['gitlab']['https'] = false
 default['gitlab']['certificate_databag_id'] = nil
+default['gitlab']['certificate_databag_type'] = 'encrypted'
 default['gitlab']['self_signed_cert'] = false
 default['gitlab']['ssl_certificate'] = "/etc/nginx/ssl/certs/#{node['fqdn']}.pem"
 default['gitlab']['ssl_certificate_key'] = "/etc/nginx/ssl/private/#{node['fqdn']}.key"
