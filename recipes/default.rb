@@ -70,6 +70,11 @@ selinux_policy_fcontext node['gitlab']['home'] do
   secontext 'user_home_dir_t'
 end
 
+# Add the git user to the "gitlab" group
+group node['gitlab']['group'] do
+  members node['gitlab']['git_user']
+end
+
 # Create a $HOME/.ssh folder
 directory "#{node['gitlab']['home']}/.ssh" do
   owner node['gitlab']['user']
