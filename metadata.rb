@@ -18,6 +18,7 @@ source_url 'https://github.com/atomic-penguin/cookbook-gitlab'
   ncurses
   nodejs
   openssh
+  packagecloud
   postgresql
   readline
   redisio
@@ -30,6 +31,7 @@ source_url 'https://github.com/atomic-penguin/cookbook-gitlab'
   depends cb_depend
 end
 depends 'chef_nginx', '~> 5.1'
+depends 'docker', '~> 2.0'
 depends 'mysql', '~> 6.0'
 depends 'mysql2_chef_gem'
 
